@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Lock, BookOpenCheck, Flag, KeyRound, Grid, Shuffle, Fingerprint, History, ArrowRight, CheckCircle, XCircle } from 'lucide-react'
-
+import { Link } from 'react-router-dom';
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
@@ -58,17 +58,23 @@ export default function Home() {
       </motion.p>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle><Lock className="inline-block mr-2" /> Start Learning</CardTitle>
-            <CardDescription>Begin your cryptography journey with our interactive tools and comprehensive lessons.</CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button>
-              Explore Ciphers <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </CardFooter>
-        </Card>
+      <Card>
+      <CardHeader>
+        <CardTitle>
+          <Lock className="inline-block mr-2" /> Start Learning
+        </CardTitle>
+        <CardDescription>
+          Begin your cryptography journey with our interactive tools and comprehensive lessons.
+        </CardDescription>
+      </CardHeader>
+      <CardFooter>
+        <Link to="/ciphers">
+          <Button>
+            Explore Ciphers <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
+      </CardFooter>
+    </Card>
         
         <Card>
           <CardHeader>
@@ -76,9 +82,11 @@ export default function Home() {
             <CardDescription>Test your knowledge with interactive exercises and hands-on encryption practice.</CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button>
-              Start Practicing <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+          <Link to="/challenges">
+                <Button>
+                Start Practicing <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+            </Link>
           </CardFooter>
         </Card>
       </div>
@@ -86,7 +94,7 @@ export default function Home() {
       <Card>
         <CardHeader>
           <CardTitle><Flag className="inline-block mr-2" /> Try This!</CardTitle>
-          <CardDescription>Can you crack this Caesar cipher? Hint: The shift is 3 letters.</CardDescription>
+          <CardDescription>Can you crack this Caesar cipher?</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="font-mono text-lg mb-4 p-4 bg-muted rounded-md">ZHOFRPH WR FUBSWROHDUQ</p>

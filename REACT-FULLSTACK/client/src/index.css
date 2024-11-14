@@ -4,48 +4,48 @@
 
 @layer base {
   :root {
-    --background: 210 25% 98%;             /* Light, neutral blue */
-    --foreground: 220 40% 15%;             /* Deep, muted blue for readability */
-    --muted: 210 20% 92%;                  /* Soft muted blue */
-    --muted-foreground: 220 10% 40%;       /* Muted text, trustworthy grayish-blue */
-    --popover: 210 25% 98%;                /* Light blue for popovers */
-    --popover-foreground: 220 40% 15%;     /* Dark blue text in popovers */
-    --card: 210 25% 98%;                   /* Light card background */
-    --card-foreground: 220 40% 15%;        /* Dark blue text on cards */
-    --border: 215 15% 80%;                 /* Subtle, light blue-gray border */
-    --input: 215 15% 80%;                  /* Inputs in similar light blue-gray */
-    --primary: 215 60% 30%;                /* Stronger, calming blue for primary */
-    --primary-foreground: 210 25% 98%;     /* Light text on primary buttons */
-    --secondary: 210 20% 92%;              /* Secondary in soft, light blue */
-    --secondary-foreground: 215 60% 30%;   /* Darker text for secondary elements */
-    --accent: 210 20% 92%;                 /* Accent in soft blue */
-    --accent-foreground: 215 60% 30%;      /* Darker text on accent */
-    --destructive: 220 75% 50%;            /* Noticeable but calm blue for alerts */
-    --destructive-foreground: 210 25% 98%; /* Light text on destructive elements */
-    --ring: 215 20% 70%;                   /* Calm blue ring */
+    --background: 0 0% 95%;                 /* Light neutral gray */
+    --foreground: 220 40% 15%;              /* Deep, muted blue for readability */
+    --muted: 210 30% 90%;                   /* Brighter muted blue */
+    --muted-foreground: 220 10% 40%;        /* Muted text, trustworthy grayish-blue */
+    --popover: 0 0% 100%;                   /* White for popovers */
+    --popover-foreground: 220 40% 15%;      /* Dark blue text in popovers */
+    --card: 0 0% 100%;                      /* White card background */
+    --card-foreground: 220 40% 15%;         /* Dark blue text on cards */
+    --border: 215 20% 70%;                  /* Subtle, light blue-gray border */
+    --input: 215 20% 70%;                   /* Inputs in similar light blue-gray */
+    --primary: 215 70% 40%;                 /* Vibrant blue for primary */
+    --primary-foreground: 0 0% 95%;         /* Light text on primary buttons */
+    --secondary: 215 50% 85%;               /* Brighter blue for secondary */
+    --secondary-foreground: 220 40% 20%;    /* Darker text for secondary elements */
+    --accent: 215 40% 85%;                  /* Accent in soft blue */
+    --accent-foreground: 220 40% 20%;       /* Darker text on accent */
+    --destructive: 220 75% 60%;             /* Noticeable blue for alerts */
+    --destructive-foreground: 0 0% 95%;     /* Light text on destructive elements */
+    --ring: 215 30% 65%;                    /* Calm blue ring */
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 220 40% 10%;             /* Dark blue for a calm background */
-    --foreground: 210 25% 98%;             /* Light blue for text */
-    --muted: 215 30% 20%;                  /* Muted, dark blue-gray */
-    --muted-foreground: 215 20% 60%;       /* Subdued text color */
-    --popover: 220 40% 10%;                /* Dark background for popovers */
-    --popover-foreground: 210 25% 98%;     /* Light text in popovers */
-    --card: 220 40% 10%;                   /* Dark background for cards */
-    --card-foreground: 210 25% 98%;        /* Light text in cards */
-    --border: 215 30% 20%;                 /* Darker border */
-    --input: 215 30% 20%;                  /* Input fields in dark blue */
-    --primary: 210 25% 98%;                /* Light blue for primary actions */
-    --primary-foreground: 215 60% 30%;     /* Dark blue text on primary */
-    --secondary: 215 30% 20%;              /* Secondary in darker blue */
-    --secondary-foreground: 210 25% 98%;   /* Light text for secondary */
-    --accent: 215 30% 20%;                 /* Dark accent */
-    --accent-foreground: 210 25% 98%;      /* Light text on accents */
-    --destructive: 220 60% 35%;            /* Soft but noticeable blue for destructive */
-    --destructive-foreground: 210 25% 98%; /* Light text for destructive */
-    --ring: 215 30% 20%;                   /* Dark blue ring */
+    --background: 220 30% 15%;              /* Dark blue-gray for a calm background */
+    --foreground: 0 0% 95%;                 /* Light blue for text */
+    --muted: 215 40% 25%;                   /* Muted, dark blue-gray */
+    --muted-foreground: 215 20% 65%;        /* Subdued text color */
+    --popover: 220 30% 15%;                 /* Dark background for popovers */
+    --popover-foreground: 0 0% 95%;         /* Light text in popovers */
+    --card: 220 30% 15%;                    /* Dark background for cards */
+    --card-foreground: 0 0% 95%;            /* Light text in cards */
+    --border: 215 40% 30%;                  /* Darker border */
+    --input: 215 40% 30%;                   /* Input fields in dark blue */
+    --primary: 0 0% 95%;                    /* Light blue for primary actions */
+    --primary-foreground: 215 70% 40%;      /* Dark blue text on primary */
+    --secondary: 215 40% 30%;               /* Secondary in darker blue */
+    --secondary-foreground: 0 0% 95%;       /* Light text for secondary */
+    --accent: 215 40% 30%;                  /* Dark accent */
+    --accent-foreground: 0 0% 95%;          /* Light text on accents */
+    --destructive: 220 60% 40%;             /* Soft but noticeable blue for destructive */
+    --destructive-foreground: 0 0% 95%;     /* Light text for destructive */
+    --ring: 215 40% 30%;                    /* Dark blue ring */
   }
 }
 
@@ -55,5 +55,8 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .card {
+    @apply shadow-lg bg-card text-card-foreground p-4 rounded-lg;
   }
 }
