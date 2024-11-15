@@ -402,7 +402,7 @@ const RailFenceCipherTab = () => {
             across a number of "rails" and then reading off each rail to form the ciphertext. 
             For decryption, the process is reversed.
           </p>
-          <div className="bg-muted p-4 rounded-md">
+          <div className="bg-blue-50 p-4 rounded-md">
             <h3 className="font-semibold mb-2">Example:</h3>
             <p>With 3 rails and the plaintext "HELLO WORLD":</p>
             <div className="mt-2 grid grid-cols-1 gap-2">

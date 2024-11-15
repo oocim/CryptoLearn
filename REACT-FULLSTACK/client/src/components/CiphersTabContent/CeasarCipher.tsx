@@ -308,26 +308,32 @@ const CaesarCipherTab = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="mb-4">
-            The Caesar cipher is a substitution cipher that shifts each letter in the 
-            text by a fixed number of positions in the alphabet. For decryption, 
-            we simply shift in the opposite direction.
-          </p>
-          <div className="bg-muted p-4 rounded-md">
-            <h3 className="font-semibold mb-2">Example:</h3>
-            <p>With a shift of 3:</p>
-            <div className="font-mono mt-2">
-              Encryption:<br />
-              A → D<br />
-              B → E<br />
-              C → F<br />
-              <br />
-              Decryption:<br />
-              D → A<br />
-              E → B<br />
-              F → C
+          <div className="space-y-4">
+            <p>
+              The Caesar cipher is a substitution cipher that shifts each letter in the 
+              text by a fixed number of positions in the alphabet. For decryption, 
+              we simply shift in the opposite direction.<br /> Example: With a shift of 3:
+            </p>
+            <div className="bg-blue-50 p-4 rounded-md">
+                  <h3 className="font-semibold mb-2">Encryption:</h3>
+                  <p>Each letter in the plaintext is shifted 3 times forward.</p>
+                  <div className="font-mono mt-2">
+                  A → D<br />
+                  B → E<br />
+                  C → F<br />
+                  </div>
+                </div>
+
+            <div className="bg-green-50 p-4 rounded-md">
+                <h3 className="font-semibold mb-2">Decryption:</h3>
+                <p>Each letter in the ciphertext is shifted 3 times backward.</p>
+                <div className="font-mono mt-2">
+                D → A<br />
+                E → B<br />
+                F → C
+                </div>
+              </div>
             </div>
-          </div>
         </CardContent>
       </Card>
 

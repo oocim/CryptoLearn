@@ -371,7 +371,7 @@ const SimpleSubstitutionCipherTab = () => {
             Each letter in the plaintext is replaced with its corresponding letter in 
             the cipher alphabet. For decryption, we simply reverse the mapping.
           </p>
-          <div className="bg-muted p-4 rounded-md">
+          <div className="bg-blue-50 p-4 rounded-md">
             <h3 className="font-semibold mb-2">Key Features:</h3>
             <ul className="list-disc list-inside space-y-2">
               <li>Bidirectional mapping (each letter has a unique pair)</li>
