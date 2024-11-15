@@ -1,7 +1,12 @@
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Grid, Shuffle, KeyRound, Fingerprint, History } from 'lucide-react';
-import React from 'react';
+import CaesarCipherTab from "./CiphersTabContent/CeasarCipher";
+import VigenereCipherTab from "./CiphersTabContent/VigenereCipher.tsx";
+import PlayfairCipherTab from "./CiphersTabContent/PlayfairCipher.tsx";
+import RailFenceCipherTab from "./CiphersTabContent/RailFenceCipher.tsx";
+import SimpleSubstitutionCipherTab from "./CiphersTabContent/SimpleSubstitutionCipher.tsx";
 
 export default function Ciphers() {
   const featuredCiphers = [
@@ -23,7 +28,6 @@ export default function Ciphers() {
       description: 'Uses pairs of letters and a 5x5 grid for encryption. First practical digraph substitution cipher.',
       funFact: 'Created in 1854 by Charles Wheatstone, but named after Lord Playfair who promoted its use.'
     },
-    // Reversed the content of the last two ciphers
     {
       name: 'Rail Fence Cipher',
       icon: History,
@@ -39,22 +43,39 @@ export default function Ciphers() {
   ];
 
   return (
-    <div>
-      <h2 className="text-3xl font-bold text-center mb-6">Cipher Library</h2>
-      <h3 className='text-xl text-center text-muted-foreground'>Explore our collection of classical ciphers and learn how they work.</h3>
-      <Tabs defaultValue="caesar">
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-center">Cipher Library</h1>
+      <p className="text-xl text-center text-muted-foreground">Explore our collection of classical ciphers and learn how they work.</p>
+      
+      <Tabs defaultValue="caesar-cipher">
         <TabsList className="grid w-full grid-cols-5">
           {featuredCiphers.map((cipher) => (
-            <TabsTrigger key={cipher.name} value={cipher.name.toLowerCase().replace(' ', '-')}>
+            <TabsTrigger 
+              key={cipher.name} 
+              value={cipher.name.toLowerCase().replace(/ /g, '-')}
+            >
               {cipher.name}
             </TabsTrigger>
           ))}
         </TabsList>
-        {featuredCiphers.map((cipher) => (
-          <TabsContent key={cipher.name} value={cipher.name.toLowerCase().replace(' ', '-')}>
+
+        <CaesarCipherTab />
+        <VigenereCipherTab />
+        <PlayfairCipherTab />
+        <RailFenceCipherTab />
+        <SimpleSubstitutionCipherTab />
+
+        {featuredCiphers.filter(cipher => cipher.name !== 'Caesar Cipher').map((cipher) => (
+          <TabsContent 
+            key={cipher.name} 
+            value={cipher.name.toLowerCase().replace(/ /g, '-')}
+          >
             <Card>
               <CardHeader>
-                <CardTitle>{React.createElement(cipher.icon, { className: "inline-block mr-2" })} {cipher.name}</CardTitle>
+                <CardTitle className="flex items-center">
+                  {React.createElement(cipher.icon, { className: "mr-2 text-primary" })}
+                  {cipher.name}
+                </CardTitle>
                 <CardDescription>{cipher.description}</CardDescription>
               </CardHeader>
               <CardContent>
