@@ -152,6 +152,7 @@ const SimpleSubstitutionCipherTab = () => {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder={`Enter text to ${mode}...`}
+              rows={3}
             />
           </div>
 

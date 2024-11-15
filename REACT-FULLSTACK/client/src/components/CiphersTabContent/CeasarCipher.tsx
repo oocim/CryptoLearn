@@ -77,11 +77,14 @@ const CaesarCipherTab = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Enter your text:</label>
-            <Textarea
+            <label className="block text-sm font-medium mb-2">
+              Enter {mode === 'encrypt' ? 'plaintext' : 'ciphertext'}:
+            </label>
+            <textarea
+              className="w-full p-3 border rounded-md"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder={mode === 'encrypt' ? "Enter text to encrypt..." : "Enter text to decrypt..."}
+              placeholder={`Enter text to ${mode}...`}
               rows={3}
             />
           </div>
