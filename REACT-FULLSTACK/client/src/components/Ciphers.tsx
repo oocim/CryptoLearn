@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Grid, Shuffle, KeyRound, Fingerprint, History } from 'lucide-react';
 import CaesarCipherTab from "./CiphersTabContent/CeasarCipher";
-import VigenereCipherTab from "./CiphersTabContent/VigenereCipher.tsx";
+import VigenereCipherTab from "./CiphersTabContent/VigenèreCipher.tsx";
 import PlayfairCipherTab from "./CiphersTabContent/PlayfairCipher.tsx";
 import RailFenceCipherTab from "./CiphersTabContent/RailFenceCipher.tsx";
 import SimpleSubstitutionCipherTab from "./CiphersTabContent/SimpleSubstitutionCipher.tsx";

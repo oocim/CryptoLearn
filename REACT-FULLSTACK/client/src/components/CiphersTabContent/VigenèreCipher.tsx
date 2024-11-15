@@ -4,7 +4,7 @@ import { Grid } from 'lucide-react';
 
 const VigenereCipherTab = () => {
   return (
-    <TabsContent value="vigenere-cipher" className="space-y-6">
+    <TabsContent value="vigenère-cipher" className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
