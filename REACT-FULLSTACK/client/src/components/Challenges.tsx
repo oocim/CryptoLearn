@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Trophy, Star, Lock, Timer, Lightbulb, CheckCircle, HelpCircle, Award } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
-import BeginnerChallenges from '../components/ChallengeTabContent/Beginner'
-import IntermediateChallenges from '../components/ChallengeTabContent/Intermediate'
-import AdvancedChallenges from '../components/ChallengeTabContent/Advanced'
+import BeginnerChallenges from './ChallengeTabContent/Beginner'
+import IntermediateChallenges from './ChallengeTabContent/Intermediate'
+import AdvancedChallenges from './ChallengeTabContent/Advanced'
+import SignUp from './Auth/SignUp'
+import Login from './Auth/Login'
+import Leaderboard from './ChallengeTabContent/Leaderboard'
 
 export interface Challenge {
   id: number
@@ -105,17 +108,76 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, isActiv
 }
 
 export default function Challenges() {
-  const [activeChallengeId, setActiveChallengeId] = React.useState<number | null>(null)
+  const [activeChallengeId, setActiveChallengeId] = useState<number | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [showSignUp, setShowSignUp] = useState(false)
+  const [showLeaderboard, setShowLeaderboard] = useState(false)
 
   const handleSubmit = (answer: string) => {
     // Implement submission logic here
     console.log('Submitted answer:', answer)
   }
 
+  const handleSignUp = (username: string, password: string) => {
+    // Implement sign up logic here
+    console.log('Sign up:', username, password)
+    setIsLoggedIn(true)
+    setShowSignUp(false)
+  }
+
+  const handleLogin = (username: string, password: string) => {
+    // Implement login logic here
+    console.log('Login:', username, password)
+    setIsLoggedIn(true)
+  }
+
+  const handleLogout = () => {
+    setIsLoggedIn(false)
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        {showSignUp ? (
+          <SignUp onSignUp={handleSignUp} />
+        ) : (
+          <Login onLogin={handleLogin} />
+        )}
+        <Button
+          variant="link"
+          onClick={() => setShowSignUp(!showSignUp)}
+          className="absolute bottom-4"
+        >
+          {showSignUp ? 'Already have an account? Log in' : 'Don\'t have an account? Sign up'}
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-center">Cryptography Challenges</h1>
-        <p className="text-xl text-center text-muted-foreground">Test your skills and level up your knowledge!</p>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Cryptography Challenges</h1>
+        <div>
+          <Button variant="outline" onClick={() => setShowLeaderboard(!showLeaderboard)} className="mr-2">
+            {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
+          </Button>
+          <Button variant="ghost" onClick={handleLogout}>Log out</Button>
+        </div>
+      </div>
+      <p className="text-xl text-muted-foreground">Test your skills and level up your knowledge!</p>
+
+      {showLeaderboard && (
+        <Leaderboard
+          entries={[
+            { rank: 1, username: 'cryptomaster', score: 1500 },
+            { rank: 2, username: 'cipherexpert', score: 1350 },
+            { rank: 3, username: 'enigmasolver', score: 1200 },
+            { rank: 4, username: 'decodegenius', score: 1100 },
+            { rank: 5, username: 'secretagent', score: 1000 },
+          ]}
+        />
+      )}
 
       <Card>
         <CardContent className="pt-6">
