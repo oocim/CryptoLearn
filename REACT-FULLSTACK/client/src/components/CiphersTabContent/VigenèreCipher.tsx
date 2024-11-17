@@ -3,7 +3,7 @@ import { TabsContent } from '../ui/tabs'
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '../ui/card'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
-import { Play, RotateCcw, Lock, ArrowUp, ArrowDown, BookOpen, ChevronLeft, ChevronRight, Grid, PlayCircle, PauseCircle, X } from 'lucide-react'
+import { Play, RotateCcw, History, Lock, ArrowUp, ArrowDown, BookOpen, ChevronLeft, ChevronRight, Grid, PlayCircle, PauseCircle, X } from 'lucide-react'
 
 const VigenereCipherTab = () => {
   const [inputText, setInputText] = useState('HELLO')
@@ -37,56 +37,55 @@ const VigenereCipherTab = () => {
   }
 
   const generateSteps = (text: string, key: string, isEncrypting: boolean) => {
-    const normalizedText = text.toUpperCase().replace(/[^A-Z]/g, '')
-    const normalizedKey = key.toUpperCase().replace(/[^A-Z]/g, '')
+    const normalizedText = text.toUpperCase().replace(/[^A-Z]/g, '');
+    const normalizedKey = key.toUpperCase().replace(/[^A-Z]/g, '');
   
-    if (!normalizedText || !normalizedKey) return []
+    if (!normalizedText || !normalizedKey) return [];
   
     let steps = [{
-      title: "Initial Setup",
-      description: `${isEncrypting ? 'Plaintext' : 'Ciphertext'}: "${normalizedText}" with keyword: "${normalizedKey}"`,
-      text: normalizedText.split(''),
-      keyword: normalizedKey.split(''),
-      result: [] as string[],
-      currentIndex: -1,
-      detail: `Each letter will be ${isEncrypting ? 'shifted forward' : 'shifted backward'} based on the corresponding keyword letter position in the alphabet`
-    }]
-  
-    let result: string[] = []
-    for (let i = 0; i < normalizedText.length; i++) {
-      const char = normalizedText[i]
-      const keyChar = normalizedKey[i % normalizedKey.length]
-      const shift = keyChar.charCodeAt(0) - 65
-      const charCode = char.charCodeAt(0) - 65
-  
-      const newCode = isEncrypting
-        ? ((charCode + shift) % 26)
-        : ((charCode - shift + 26) % 26)
-      const newChar = String.fromCharCode(newCode + 65)
-  
-      result = [...result, newChar]
-  
-      const operation = isEncrypting 
-        ? `${char} + ${shift} = ${newChar}`
-        : `${char} - ${shift} = ${newChar}`
-  
-      const explanation = isEncrypting
-        ? `${char} (${charCode}) + ${keyChar} (${shift}) = ${newChar} (${newCode})`
-        : `${char} (${charCode}) - ${keyChar} (${shift}) = ${newChar} (${newCode})`
-  
-      steps.push({
-        title: `Step ${i + 1}: ${isEncrypting ? 'Encrypting' : 'Decrypting'} "${char}" with "${keyChar}"`,
-        description: `${isEncrypting ? 'Shift forward' : 'Shift backward'} by ${shift} positions (based on ${keyChar})`,
+        title: "Initial Setup",
+        description: `${isEncrypting ? 'Plaintext' : 'Ciphertext'}: "${normalizedText}" with keyword: "${normalizedKey}"`,
         text: normalizedText.split(''),
         keyword: normalizedKey.split(''),
-        result: [...result],
-        currentIndex: i,
-        detail: `${operation} (${explanation})`
-      })
+        result: [] as string[],
+        currentIndex: -1,
+        detail: `Each letter will be ${isEncrypting ? 'shifted forward' : 'shifted backward'} based on the position of the corresponding keyword letter in the alphabet.`
+    }];
+  
+    let result: string[] = [];
+    for (let i = 0; i < normalizedText.length; i++) {
+        const char = normalizedText[i];
+        const keyChar = normalizedKey[i % normalizedKey.length];
+        const shift = keyChar.charCodeAt(0) - 65; // Position of keyChar in alphabet (0-based index)
+        const charCode = char.charCodeAt(0) - 65; // Position of char in alphabet (0-based index)
+  
+        const newCode = isEncrypting
+            ? ((charCode + shift) % 26) // Forward shift
+            : ((charCode - shift + 26) % 26); // Backward shift
+        const newChar = String.fromCharCode(newCode + 65); // Convert back to letter
+  
+        result = [...result, newChar];
+  
+        const operation = isEncrypting
+            ? `${char} + ${shift} = ${newChar}`
+            : `${char} - ${shift} = ${newChar}`;
+  
+        const explanation = `(The letter "${char}" (${charCode}) is combined with "${keyChar}" (${shift}) to produce "${newChar}" (${newCode}).)`;
+  
+        steps.push({
+            title: `Step ${i + 1}: ${isEncrypting ? 'Encrypting' : 'Decrypting'} "${char}" with "${keyChar}"`,
+            description: `${operation} (based on the alphabet position of "${keyChar}").`,
+            text: normalizedText.split(''),
+            keyword: normalizedKey.split(''),
+            result: [...result],
+            currentIndex: i,
+            detail: `${operation}. ${explanation}`
+        });
     }
   
-    return steps
-  }  
+    return steps;
+};
+
 
   const handleProcess = () => {
     const result = processVigenere(inputText, keyword, mode === 'encrypt')
@@ -370,6 +369,25 @@ const VigenereCipherTab = () => {
                 </div>
               </div>
             </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <History className="mr-2 text-primary" />
+            Security Level
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <h3 className="font-semibold mb-2">Security Level: Moderate</h3>
+          <div className="flex items-center mb-4">
+            <div className="h-2 w-24 bg-yellow-500 rounded-full" />
+            <div className="h-2 w-24 bg-yellow-500 rounded-full ml-1" />
+            <div className="h-2 w-24 bg-muted rounded-full ml-1" />
+          </div>
+          <p className="text-sm text-muted-foreground">
+          The Vigenère cipher is more secure than the Caesar cipher but can still be broken with frequency analysis on longer texts.
+          </p>
+        </CardContent>
       </Card>
     </TabsContent>
   )
