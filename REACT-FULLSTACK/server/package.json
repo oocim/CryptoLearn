@@ -11,8 +11,14 @@
   "description": "",
   "dependencies": {
     "express": "^4.21.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.11.4",
     "nodemon": "^3.1.7",
     "path": "^0.12.7",
+    "sequelize": "^6.37.5",
     "server": "file:"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.2"
   }
 }
