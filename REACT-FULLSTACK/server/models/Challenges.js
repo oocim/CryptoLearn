@@ -6,25 +6,45 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             primaryKey: true,
         },
+        title: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },      
+        description: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        ciphertext: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        plaintext: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        points: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        timeLimit: {
+            type: DataTypes.TIME,
+            allowNull: false,
+        },
+        hint: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+        },
         cipherType: {
             type: DataTypes.STRING,
             allowNull: false,
         },
         category: {
-            type: DataTypes.ENUM('easy', 'normal', 'hard'),
+            type: DataTypes.STRING,
             allowNull: false,
         },
-        prompt: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-        },
-        solution: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-        },
-        createdAt: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
+        completed: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
     });
 
