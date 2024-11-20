@@ -11,8 +11,11 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-const challRouter = require("./routes/Challenges");
-app.use("/challenges/caesar/beginner", challRouter);
+const beginnerRouter = require("./routes/Challenges");
+app.use("/challenges", beginnerRouter);
+
+const intermediateRouter = require("./routes/Challenges");
+
 
 app.get('/challenges/caesar/beginner', async (req, res) => {
     const challenges = await db.Challenges.findAll();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Trophy, Star, Lock, Timer, Lightbulb, CheckCircle, HelpCircle, Award } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
@@ -12,7 +12,7 @@ import Login from './Auth/Login'
 import Leaderboard from './ChallengeTabContent/Leaderboard'
 
 export interface Challenge {
-  id: number
+  challengeId: number
   title: string
   description: string
   ciphertext: string
@@ -34,10 +34,43 @@ interface ChallengeCardProps {
 export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, isActive, onActivate, onSubmit }) => {
   const [showHint, setShowHint] = React.useState(false)
   const [userAnswer, setUserAnswer] = React.useState('')
+  const [isCorrect, setIsCorrect] = React.useState<boolean | null>(null)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
+  useEffect(() => {
+    if (!isActive && !isSubmitted) {
+      setIsCorrect(null)
+    }
+  }, [isActive])
+
+  const handleSubmit = () => {
+    const correct = userAnswer.trim().toLowerCase() === challenge.plaintext.trim().toLowerCase()
+    setIsCorrect(correct)
+    setIsSubmitted(correct)
+    if (isCorrect === true) {
+      console.log(challenge.plaintext)
+    }
+    onSubmit(userAnswer)
+    setUserAnswer('')
+  }
+
+  let cardClass = 'cursor-pointer';
+
+  if (isActive) {
+    if (isCorrect) {
+      cardClass += ' ring-2 ring-green-500';
+    } else if (isCorrect == null) {
+      cardClass += ' ring-2 ring-blue-500';
+    }
+    else {
+      cardClass += ' ring-2 ring-red-500';
+    }
+  }
 
   return (
-    <Card className={`cursor-pointer ${isActive ? 'ring-2 ring-primary' : ''}`} onClick={onActivate}>
+    <Card 
+    className={cardClass} onClick={onActivate}
+    >
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center">
@@ -86,20 +119,44 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, isActiv
             <Input
               type="text"
               placeholder="Enter your answer..."
-              value={userAnswer}
+              value={isSubmitted ? challenge.plaintext : userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
               onClick={(e) => e.stopPropagation()}
+              disabled={isSubmitted}
             />
-            <Button
-              className="w-full"
-              onClick={(e) => {
-                e.stopPropagation()
-                onSubmit(userAnswer)
-                setUserAnswer('')
-              }}
-            >
-              Submit Answer
-            </Button>
+            {!isSubmitted && (
+              <Button
+                className="w-full"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleSubmit()
+                }}
+              >
+                Submit Answer
+              </Button>
+            )}
+            {isCorrect !== null && (
+              <p className={isCorrect ? 'text-green-500' : 'text-red-500'}>
+                {isCorrect ? 'Correct answer!' : 'Incorrect answer. Try again!'}
+              </p>
+            )}
+          </div>
+        )}
+        {!isActive && isSubmitted && (
+          <div className="space-y-4">
+            <Input
+              type="text"
+              placeholder="Enter your answer..."
+              value={isSubmitted ? challenge.plaintext : userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              disabled={isSubmitted}
+            />
+            {isCorrect !== null && (
+              <p className={isCorrect ? 'text-green-500' : 'text-red-500'}>
+                {isCorrect ? 'Correct answer!' : 'Incorrect answer. Try again!'}
+              </p>
+            )}
           </div>
         )}
       </CardContent>
@@ -112,10 +169,65 @@ export default function Challenges() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [showSignUp, setShowSignUp] = useState(false)
   const [showLeaderboard, setShowLeaderboard] = useState(false)
+  const [userPoints, setUserPoints] = useState(0)
+  const [challenges, setChallenges] = useState<Challenge[]>([])
+  const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null)
 
-  const handleSubmit = (answer: string) => {
-    // Implement submission logic here
-    console.log('Submitted answer:', answer)
+  useEffect(() => {
+    // Fetch challenges from an API or load them from a local source
+    const fetchChallenges = async () => {
+      // Replace this with actual API call or data loading logic
+      const response = await fetch('/api/challenges')
+      const data = await response.json()
+      setChallenges(data)
+    }
+
+    fetchChallenges()
+  }, [])
+
+  useEffect(() => {
+    if (activeChallengeId !== null) {
+      const challenge = challenges.find(c => c.challengeId === activeChallengeId)
+      setActiveChallenge(challenge || null)
+    } else {
+      setActiveChallenge(null)
+    }
+  }, [activeChallengeId, challenges])
+
+  const handleSubmit = async (answer: string) => {
+    if (activeChallenge) {
+      const isCorrect = answer.trim().toLowerCase() === activeChallenge.plaintext.trim().toLowerCase()
+
+      if (isCorrect) {
+        // Update user points
+        const newPoints = userPoints + activeChallenge.points
+        setUserPoints(newPoints)
+
+        try {
+          const response = await fetch('/api/update-points', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ points: newPoints }),
+          })
+
+          if (!response.ok) {
+            throw new Error('Failed to update points')
+          }
+
+          console.log('Points updated successfully')
+        } catch (error) {
+          console.error('Error updating points:', error)
+        }
+      }
+
+      // Update the challenge's completed status
+      const updatedChallenges = challenges.map(c => 
+        c.challengeId === activeChallenge.challengeId ? { ...c, completed: isCorrect } : c
+      )
+      setChallenges(updatedChallenges)
+    }
   }
 
   const handleSignUp = (username: string, password: string) => {
@@ -250,7 +362,7 @@ export default function Challenges() {
               <div className="text-sm text-muted-foreground">Total Points</div>
               <div className="text-2xl font-semibold flex items-center mt-1">
                 <Trophy className="h-5 w-5 text-blue-500 mr-2" />
-                1000
+                {userPoints}
               </div>
             </div>
             <div className="bg-muted p-4 rounded-md">
