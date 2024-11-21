@@ -203,16 +203,21 @@ export default function Challenges() {
 
   const fetchLeaderboardData = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:3000/user/leaderboards')
-      if (!response.ok) {
-        throw new Error('Failed to fetch leaderboard data')
-      }
-      const data = await response.json()
-      setLeaderboardEntries(data)
+        const response = await fetch('http://localhost:3000/user/leaderboards');
+        if (!response.ok) {
+            throw new Error('Failed to fetch leaderboard data');
+        }
+        const data: LeaderboardEntry[] = await response.json();
+
+        // Sort the filtered data by rank in ascending order
+        const sortedData = data.sort((a, b) => a.rank - b.rank);
+
+        // Update state with the sorted and filtered data
+        setLeaderboardEntries(sortedData);
     } catch (error) {
-      console.error('Error fetching leaderboard data:', error)
+        console.error('Error fetching leaderboard data:', error);
     }
-  }, [])
+}, []);
 
   useEffect(() => {
     fetchLeaderboardData() // Initial fetch
