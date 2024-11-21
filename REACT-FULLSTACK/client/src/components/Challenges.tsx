@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Trophy, Star, Lock, Timer, Lightbulb, CheckCircle, HelpCircle, Award } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
@@ -20,26 +20,53 @@ export interface Challenge {
   points: number
   timeLimit: string
   hint: string
-  type: string
+  cipherType: string
+  cipherMode: string
   completed: boolean
+}
+
+export interface UserChallengeProgress {
+  progressId: number
+  userId: number
+  challengeId: number
+  solved: boolean
+}
+
+interface LeaderboardEntry {
+  rank: number
+  username: string
+  score: number
 }
 
 interface ChallengeCardProps {
   challenge: Challenge
+  userChallengeProgress: UserChallengeProgress
   isActive: boolean
   onActivate: () => void
-  onSubmit: (answer: string) => void
+  onSubmit: (answer: string, challengeId: number) => void
+  updateUserProgress: (progressId: number, challengeId: number, solved: boolean) => void
 }
 
-export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, isActive, onActivate, onSubmit }) => {
-  const [showHint, setShowHint] = React.useState(false)
-  const [userAnswer, setUserAnswer] = React.useState('')
-  const [isCorrect, setIsCorrect] = React.useState<boolean | null>(null)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+export const ChallengeCard: React.FC<ChallengeCardProps> = ({ 
+  challenge, 
+  userChallengeProgress, 
+  isActive, 
+  onActivate, 
+  onSubmit,
+  updateUserProgress 
+}) => {
+  const [showHint, setShowHint] = useState(false)
+  const [userAnswer, setUserAnswer] = useState('')
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
+  const [isSubmitted, setIsSubmitted] = useState(userChallengeProgress.solved)
+  const [currentUserId, setCurrentUserId] = useState(3) //babaguhin if may login na
 
   useEffect(() => {
     if (!isActive && !isSubmitted) {
       setIsCorrect(null)
+    }
+    else if (isSubmitted) {
+      setIsCorrect(true)
     }
   }, [isActive])
 
@@ -47,30 +74,29 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, isActiv
     const correct = userAnswer.trim().toLowerCase() === challenge.plaintext.trim().toLowerCase()
     setIsCorrect(correct)
     setIsSubmitted(correct)
-    if (isCorrect === true) {
+    if (correct) {
       console.log(challenge.plaintext)
+      // Update the UserChallengeProgress
+      updateUserProgress(currentUserId, challenge.challengeId, true)
     }
-    onSubmit(userAnswer)
+    onSubmit(userAnswer, challenge.challengeId)
     setUserAnswer('')
   }
 
-  let cardClass = 'cursor-pointer';
+  let cardClass = 'cursor-pointer'
 
   if (isActive) {
     if (isCorrect) {
-      cardClass += ' ring-2 ring-green-500';
+      cardClass += ' ring-2 ring-green-500'
     } else if (isCorrect == null) {
-      cardClass += ' ring-2 ring-blue-500';
-    }
-    else {
-      cardClass += ' ring-2 ring-red-500';
+      cardClass += ' ring-2 ring-blue-500'
+    } else {
+      cardClass += ' ring-2 ring-red-500'
     }
   }
 
   return (
-    <Card 
-    className={cardClass} onClick={onActivate}
-    >
+    <Card className={cardClass} onClick={onActivate}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center">
@@ -82,7 +108,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, isActiv
             <span className="font-semibold">{challenge.points} pts</span>
           </div>
         </CardTitle>
-        <CardDescription>Type: {challenge.type}</CardDescription>
+        <CardDescription>Type: {challenge.cipherType}, {challenge.cipherMode}</CardDescription>
       </CardHeader>
       <CardContent>
         <p className="mb-4">{challenge.description}</p>
@@ -172,18 +198,31 @@ export default function Challenges() {
   const [userPoints, setUserPoints] = useState(0)
   const [challenges, setChallenges] = useState<Challenge[]>([])
   const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null)
+  const [currentUserId, setCurrentUserId] = useState(3) //babaguhin if may login na
+  const [leaderboardEntries, setLeaderboardEntries] = useState<LeaderboardEntry[]>([])
+
+  const fetchLeaderboardData = useCallback(async () => {
+    try {
+      const response = await fetch('http://localhost:3000/user/leaderboards')
+      if (!response.ok) {
+        throw new Error('Failed to fetch leaderboard data')
+      }
+      const data = await response.json()
+      setLeaderboardEntries(data)
+    } catch (error) {
+      console.error('Error fetching leaderboard data:', error)
+    }
+  }, [])
 
   useEffect(() => {
-    // Fetch challenges from an API or load them from a local source
-    const fetchChallenges = async () => {
-      // Replace this with actual API call or data loading logic
-      const response = await fetch('/api/challenges')
-      const data = await response.json()
-      setChallenges(data)
-    }
+    fetchLeaderboardData() // Initial fetch
 
-    fetchChallenges()
-  }, [])
+    // Set up polling interval
+    const intervalId = setInterval(fetchLeaderboardData, 5000) // Fetch every 5 seconds
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId)
+  }, [fetchLeaderboardData])
 
   useEffect(() => {
     if (activeChallengeId !== null) {
@@ -196,20 +235,32 @@ export default function Challenges() {
 
   const handleSubmit = async (answer: string) => {
     if (activeChallenge) {
+      // Update the challenge's completed status
+      const updatedChallenges = challenges.map(c => 
+        c.challengeId === activeChallenge.challengeId ? { ...c, completed: isCorrect } : c
+      )
+      setChallenges(updatedChallenges)
+
+
+
       const isCorrect = answer.trim().toLowerCase() === activeChallenge.plaintext.trim().toLowerCase()
 
       if (isCorrect) {
         // Update user points
-        const newPoints = userPoints + activeChallenge.points
+        const newPoints = activeChallenge.points
         setUserPoints(newPoints)
 
         try {
-          const response = await fetch('/api/update-points', {
+          const response = await fetch("http://localhost:3000/updateprogress", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ points: newPoints }),
+            body: JSON.stringify({ 
+              userId: currentUserId,
+              challengeId: activeChallenge.challengeId,
+              solved: true
+            }),
           })
 
           if (!response.ok) {
@@ -217,16 +268,12 @@ export default function Challenges() {
           }
 
           console.log('Points updated successfully')
+          await fetchLeaderboardData()
         } catch (error) {
           console.error('Error updating points:', error)
         }
       }
 
-      // Update the challenge's completed status
-      const updatedChallenges = challenges.map(c => 
-        c.challengeId === activeChallenge.challengeId ? { ...c, completed: isCorrect } : c
-      )
-      setChallenges(updatedChallenges)
     }
   }
 
@@ -266,6 +313,27 @@ export default function Challenges() {
     )
   }
 
+  const updateUserProgress = async (userId: number, challengeId: number, solved: boolean) => {
+    try {
+      const response = await fetch("http://localhost:3000/updateprogress", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, challengeId, solved }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update user progress');
+      }
+  
+      console.log('User progress updated successfully');
+      // You might want to update your local state here as well
+    } catch (error) {
+      console.error('Error updating user progress:', error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -280,15 +348,7 @@ export default function Challenges() {
       <p className="text-xl text-muted-foreground">Test your skills and level up your knowledge!</p>
 
       {showLeaderboard && (
-        <Leaderboard
-          entries={[
-            { rank: 1, username: 'cryptomaster', score: 1500 },
-            { rank: 2, username: 'cipherexpert', score: 1350 },
-            { rank: 3, username: 'enigmasolver', score: 1200 },
-            { rank: 4, username: 'decodegenius', score: 1100 },
-            { rank: 5, username: 'secretagent', score: 1000 },
-          ]}
-        />
+        <Leaderboard entries={leaderboardEntries} />
       )}
 
       <Card>
@@ -316,10 +376,12 @@ export default function Challenges() {
           <TabsTrigger value="advanced">Advanced</TabsTrigger>
         </TabsList>
         <TabsContent value="beginner">
-          <BeginnerChallenges
-            activeChallengeId={activeChallengeId}
-            setActiveChallengeId={setActiveChallengeId}
-            onSubmit={handleSubmit}
+        <BeginnerChallenges
+          activeChallengeId={activeChallengeId}
+          setActiveChallengeId={setActiveChallengeId}
+          onSubmit={handleSubmit}
+          updateUserProgress={updateUserProgress}
+          userId={currentUserId}
           />
         </TabsContent>
         <TabsContent value="intermediate">
@@ -327,6 +389,8 @@ export default function Challenges() {
             activeChallengeId={activeChallengeId}
             setActiveChallengeId={setActiveChallengeId}
             onSubmit={handleSubmit}
+            updateUserProgress={updateUserProgress}
+            userId={currentUserId}
           />
         </TabsContent>
         <TabsContent value="advanced">
@@ -334,6 +398,8 @@ export default function Challenges() {
             activeChallengeId={activeChallengeId}
             setActiveChallengeId={setActiveChallengeId}
             onSubmit={handleSubmit}
+            updateUserProgress={updateUserProgress}
+            userId={currentUserId}
           />
         </TabsContent>
       </Tabs>

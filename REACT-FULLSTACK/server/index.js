@@ -15,12 +15,16 @@ const beginnerRouter = require("./routes/Challenges");
 app.use("/challenges", beginnerRouter);
 
 const intermediateRouter = require("./routes/Challenges");
+app.use("/challenges", intermediateRouter);
 
+const advancedRouter = require("./routes/Challenges");
+app.use("/challenges", advancedRouter);
 
-app.get('/challenges/caesar/beginner', async (req, res) => {
-    const challenges = await db.Challenges.findAll();
-    res.json(challenges);
-});
+const userProgressRouter = require("./routes/UserChallengeProgress");
+app.use("/updateprogress", userProgressRouter);
+
+const createUserRouter = require("./routes/User");
+app.use("/user", createUserRouter);
 
 db.sequelize.sync().then(() => {
     app.listen(PORT, function(req, res) {

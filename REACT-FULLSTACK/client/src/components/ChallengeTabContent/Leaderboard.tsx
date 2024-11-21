@@ -10,6 +10,7 @@ interface LeaderboardEntry {
 }
 
 const Leaderboard = ({ entries }: { entries: LeaderboardEntry[] }) => {
+
   return (
     <Card>
       <CardHeader>

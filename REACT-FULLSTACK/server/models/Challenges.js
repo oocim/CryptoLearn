@@ -26,10 +26,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        timeLimit: {
-            type: DataTypes.TIME,
-            allowNull: false,
-        },
         hint: {
             type: DataTypes.TEXT,
             allowNull: false,
@@ -38,13 +34,13 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        category: {
+        cipherMode: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        completed: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false,
+        category: {
+            type: DataTypes.STRING,
+            allowNull: false,
         },
     });
 

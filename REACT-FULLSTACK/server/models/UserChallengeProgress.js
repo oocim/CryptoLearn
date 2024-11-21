@@ -21,21 +21,9 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'challengeId',
             },
         },
-        attempted: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false,
-        },
         solved: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
-        },
-        attempts: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0,
-        },
-        lastAttemptedAt: {
-            type: DataTypes.DATE,
-            allowNull: true,
         },
     });
 
