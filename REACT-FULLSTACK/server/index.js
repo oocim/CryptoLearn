@@ -1,9 +1,9 @@
 const express = require("express");
-const path = require('path');
-const cors = require('cors');
+const cors = require("cors");
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 
-const db = require("./models");
-
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -11,19 +11,34 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-const beginnerRouter = require("./routes/Challenges");
-app.use("/challenges", beginnerRouter);
+const challengesRouter = require("./routes/Challenges");
+const userChallengeProgressRouter = require("./routes/UserChallengeProgress");
+const userRouter = require("./routes/Users");
 
-const intermediateRouter = require("./routes/Challenges");
+app.use("/challenges", challengesRouter);
+app.use("/user-progress", userChallengeProgressRouter);
+app.use("/users", userRouter);
 
 
-app.get('/challenges/caesar/beginner', async (req, res) => {
-    const challenges = await db.Challenges.findAll();
-    res.json(challenges);
+const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/crypto";
+
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("MongoDB connected successfully!");
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:", err);
+  });
+
+app.get("/", (req, res) => {
+    res.send("Cryptography API is running!");
 });
 
-db.sequelize.sync().then(() => {
-    app.listen(PORT, function(req, res) {
-        console.log("Port 3000 is running.");
-    });
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: "Something went wrong!" });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
 });
