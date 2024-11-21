@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useEffect, useState } from 'react'
 import { Challenge, ChallengeCard, UserChallengeProgress } from '../Challenges'
 
@@ -64,42 +63,6 @@ export default function AdvancedChallenges({
     }
     loadChallengesAndProgress()
   }, [userId])
-=======
-import { useEffect, useState } from 'react';
-import { Challenge, ChallengeCard } from '../Challenges';
-
-export const fetchAdvancedChallenges = async (): Promise<Challenge[]> => {
-  try {
-    const response = await fetch("http://localhost:3000/challenges?category=Advanced");
-    if (!response.ok) {
-      throw new Error('Failed to fetch challenges');
-    }
-    const data: Challenge[] = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error('Error fetching advanced challenges:', error);
-    return [];
-  }
-};
-
-interface AdvancedChallengesProps {
-  activeChallengeId: number | null;
-  setActiveChallengeId: (id: number | null) => void;
-  onSubmit: (answer: string) => void;
-}
-
-export default function AdvancedChallenges({ activeChallengeId, setActiveChallengeId, onSubmit }: AdvancedChallengesProps) {
-  const [advancedChallenges, setAdvancedChallenges] = useState<Challenge[]>([]);
-
-  useEffect(() => {
-    const loadChallenges = async () => {
-      const challenges = await fetchAdvancedChallenges();
-      setAdvancedChallenges(challenges);
-    };
-    loadChallenges();
-  }, []);
->>>>>>> 484da7d347588247ebfe2776e661c14f0e081b3b
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
@@ -123,5 +86,5 @@ export default function AdvancedChallenges({ activeChallengeId, setActiveChallen
         )
       })}
     </div>
-  );
+  )
 }
