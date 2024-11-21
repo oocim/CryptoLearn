@@ -240,7 +240,6 @@ export default function Challenges() {
 
   const handleSubmit = async (answer: string) => {
     if (activeChallenge) {
-      // Update the challenge's completed status
       const updatedChallenges = challenges.map(c => 
         c.challengeId === activeChallenge.challengeId ? { ...c, completed: isCorrect } : c
       )
@@ -289,11 +288,35 @@ export default function Challenges() {
     setShowSignUp(false)
   }
 
-  const handleLogin = (username: string, password: string) => {
-    // Implement login logic here
-    console.log('Login:', username, password)
-    setIsLoggedIn(true)
-  }
+  const handleLogin = async (username: string, password: string) => {
+    try {
+      const response = await fetch("http://localhost:3000/users/login", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to login');
+      }
+  
+      // Assuming the response contains a token or user data
+      const data = await response.json();
+      
+      // Set the user id or token from the response (or any other data you need)
+      setCurrentUserId(data.userId); // Or any appropriate data from the response
+      setIsLoggedIn(true); // Set login state to true
+      localStorage.setItem('userId', data.userId);
+  
+      console.log('Login successful');
+    } catch (error) {
+      console.error('Error during login:', error);
+      // Optionally display a message to the user
+    }
+  };
+  
 
   const handleLogout = () => {
     setIsLoggedIn(false)

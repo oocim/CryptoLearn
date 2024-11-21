@@ -5,13 +5,53 @@ import { Button } from '../ui/button'
 import { Label } from '../ui/label'
 import { UserPlus } from 'lucide-react'
 
-const SignUp = ({ onSignUp }: { onSignUp: (username: string, password: string) => void }) => {
+const SignUp = ({ onSignUp }: { onSignUp: (username: string, email: string, password: string) => void }) => {
   const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<string>('')  // To store error messages
+  const [loading, setLoading] = useState<boolean>(false)  // To handle loading state
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSignUp(username, password)
+    setLoading(true)  // Start loading state
+    setError('')  // Clear previous error message
+
+    // Basic email validation
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setError('Please enter a valid email address.')
+      setLoading(false)
+      return
+    }
+
+    try {
+      // Sending the POST request to the API
+      const response = await fetch('http://localhost:3000/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Trigger the onSignUp function passed as prop after successful signup
+        onSignUp(username, email, password)
+      } else {
+        // Show error if signup fails
+        const errorData = await response.json()
+        setError(errorData.message || 'Signup failed. Please try again.')
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again later.')
+    } finally {
+      setLoading(false)  // End loading state
+    }
   }
 
   return (
@@ -33,6 +73,18 @@ const SignUp = ({ onSignUp }: { onSignUp: (username: string, password: string) =
                 placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                disabled={loading}  // Disable inputs while loading
+              />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}  // Disable inputs while loading
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -43,13 +95,17 @@ const SignUp = ({ onSignUp }: { onSignUp: (username: string, password: string) =
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}  // Disable inputs while loading
               />
             </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}  {/* Show error message */}
           </div>
         </form>
       </CardContent>
       <CardFooter>
-        <Button className="w-full" onClick={handleSubmit}>Sign Up</Button>
+        <Button className="w-full" onClick={handleSubmit} disabled={loading}>
+          {loading ? 'Signing Up...' : 'Sign Up'}
+        </Button>
       </CardFooter>
     </Card>
   )
