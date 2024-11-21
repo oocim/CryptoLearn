@@ -3,7 +3,11 @@ import { Challenge, ChallengeCard, UserChallengeProgress } from '../Challenges'
 
 export const fetchBeginnerChallenges = async (): Promise<Challenge[]> => {
   try {
+<<<<<<< HEAD
     const response = await fetch("http://localhost:3000/challenges/beginner")
+=======
+    const response = await fetch("http://localhost:3000/challenges?category=Beginner");
+>>>>>>> 484da7d347588247ebfe2776e661c14f0e081b3b
     if (!response.ok) {
       throw new Error('Failed to fetch challenges')
     }
@@ -51,6 +55,7 @@ export default function BeginnerChallenges({
   const [userProgress, setUserProgress] = useState<UserChallengeProgress[]>([])
 
   useEffect(() => {
+<<<<<<< HEAD
     const loadChallengesAndProgress = async () => {
       const [challenges, progress] = await Promise.all([
         fetchBeginnerChallenges(),
@@ -61,6 +66,14 @@ export default function BeginnerChallenges({
     }
     loadChallengesAndProgress()
   }, [userId])
+=======
+    const loadChallenges = async () => {
+      const challenges = await fetchBeginnerChallenges();
+      setBeginnerChallenges(challenges);
+    };
+    loadChallenges();
+  }, []);
+>>>>>>> 484da7d347588247ebfe2776e661c14f0e081b3b
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
@@ -84,5 +97,10 @@ export default function BeginnerChallenges({
         )
       })}
     </div>
+<<<<<<< HEAD
   )
 }
+=======
+  );
+}
+>>>>>>> 484da7d347588247ebfe2776e661c14f0e081b3b
