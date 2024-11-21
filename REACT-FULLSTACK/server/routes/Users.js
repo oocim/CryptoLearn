@@ -5,12 +5,9 @@ const User = require("../models/User");
 
 const router = express.Router();
 
+
 router.get("/", async (req, res) => {
     try {
-        if (req.user.role !== "admin") {
-            return res.status(403).json({ error: "Access denied, admin only" });
-        }
-
         const users = await User.find({}, { passwordHash: 0 });
         res.json(users);
     } catch (error) {
@@ -19,6 +16,7 @@ router.get("/", async (req, res) => {
     }
 });
 
+// Get a specific user by ID
 router.get("/:userId", async (req, res) => {
     const { userId } = req.params;
     try {
@@ -35,6 +33,7 @@ router.get("/:userId", async (req, res) => {
     }
 });
 
+// Create a new user
 router.post("/", async (req, res) => {
     const { username, email, password } = req.body;
 
@@ -65,6 +64,7 @@ router.post("/", async (req, res) => {
     }
 });
 
+// Update an existing user
 router.put("/:userId", async (req, res) => {
     const { userId } = req.params;
     const { username, email, password } = req.body;
@@ -93,6 +93,7 @@ router.put("/:userId", async (req, res) => {
     }
 });
 
+// Delete a user
 router.delete("/:userId", async (req, res) => {
     const { userId } = req.params;
 
@@ -115,6 +116,7 @@ router.delete("/:userId", async (req, res) => {
     }
 });
 
+// User login
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
@@ -145,6 +147,44 @@ router.post("/login", async (req, res) => {
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).json({ error: "An error occurred during login" });
+    }
+});
+
+// Add points to a user and track solved challenges
+router.post("/add-points", async (req, res) => {
+    const { userId, difficulty, pointsEarned } = req.body;
+
+    // Validate input data
+    if (!userId || !difficulty || !pointsEarned) {
+        return res.status(400).json({ error: "User ID, difficulty, and points are required" });
+    }
+
+    // Validate difficulty
+    const validDifficulties = ["beginner", "intermediate", "advanced"];
+    if (!validDifficulties.includes(difficulty)) {
+        return res.status(400).json({ error: "Invalid difficulty level" });
+    }
+
+    try {
+        // Find the user by their userId
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Add points to the user's total points
+        user.points += pointsEarned;
+
+        // Increment the count of solved challenges based on difficulty level
+        user.solvedChallenges[difficulty] += 1;
+
+        // Save the updated user data
+        await user.save();
+
+        res.json({ message: "Points added successfully", updatedUser: user });
+    } catch (error) {
+        console.error("Error updating points:", error);
+        res.status(500).json({ error: "An error occurred while adding points" });
     }
 });
 

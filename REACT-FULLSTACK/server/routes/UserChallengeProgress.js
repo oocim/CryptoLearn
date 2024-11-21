@@ -1,41 +1,80 @@
 const express = require("express");
 const router = express.Router();
-const {UserChallengeProgresses} = require("../models");
 
+const Challenge = require("../models/Challenge");
+const User = require("../models/User");
+const UserChallengeProgress = require("../models/UserChallengeProgress");
 
-router.get('/', async (req, res) => {
-    const listOfProgress = await UserChallengeProgresses.findAll();
-    res.json(listOfProgress);
-});
+// Submit an answer and update progress
+router.post("/submit-answer", async (req, res) => {
+    const { userId, challengeId, answer } = req.body;
 
-router.post('/', async (req, res) => {
     try {
-        const post = req.body;
+        const user = await User.findById(userId);
+        const challenge = await Challenge.findById(challengeId);
 
-        // Assuming the post contains 'userId' and 'challengeId' to identify the record
-        const { userId, challengeId, solved } = post;
-
-        // Update the UserProgressChallenge record that matches both userId and challengeId
-        const updated = await UserChallengeProgresses.update(post, {
-            where: {
-                userId,
-                challengeId
-            }
-        });
-
-        // Check if any row was updated and send an appropriate response
-        if (updated[0] === 0) {
-            return res.status(404).json({ error: 'No matching progress record found to update' });
+        if (!user || !challenge) {
+            return res.status(404).json({ error: "User or Challenge not found." });
         }
 
-        // Send back the updated data
-        res.json(post);
+        let progress = await UserChallengeProgress.findOne({ userId, challengeId });
 
+        if (!progress) {
+            progress = new UserChallengeProgress({
+                userId,
+                challengeId,
+                attempts: 0,
+                solved: false,
+            });
+        }
+
+        // Check if the answer is correct
+        let isCorrect = answer === challenge.plaintext;
+
+        if (isCorrect) {
+            progress.solved = true; // Mark as solved
+        } else {
+            progress.attempts += 1; // Increment attempts if incorrect
+        }
+
+        progress.lastAttemptedAt = new Date();
+        await progress.save();
+
+        res.json({ message: isCorrect ? "Correct answer!" : "Incorrect answer, try again.", progress });
     } catch (error) {
-        console.error('Error updating progress:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error("Error submitting answer:", error);
+        res.status(500).json({ error: "An error occurred while submitting the answer." });
     }
 });
 
+// Fetch user progress by challenge difficulty (Beginner, Intermediate, Advanced)
+router.get("/:userId/:difficulty", async (req, res) => {
+    const { userId, difficulty } = req.params;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        // Get challenge IDs by difficulty
+        const challenges = await Challenge.find({ difficulty });
+        const challengeIds = challenges.map(challenge => challenge._id);
+
+        // Fetch user progress for those challenges
+        const userProgress = await UserChallengeProgress.find({ userId, challengeId: { $in: challengeIds } })
+            .populate("challenge", "title description points cipherType")
+            .exec();
+
+        if (userProgress.length === 0) {
+            return res.status(404).json({ message: "No progress found for the user in this difficulty." });
+        }
+
+        res.json(userProgress);
+    } catch (error) {
+        console.error("Error fetching user progress:", error);
+        res.status(500).json({ error: "An error occurred while fetching user progress." });
+    }
+});
 
 module.exports = router;

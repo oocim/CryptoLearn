@@ -28,26 +28,32 @@ const userSchema = new mongoose.Schema(
       default: "user",
       required: true,
     },
-    emailVerified: {
-      type: Boolean,
-      default: false,
-    },
-    emailVerificationToken: {
-      type: String,
-      required: false,
-      unique: true,
-    },
     lastLogin: {
       type: Date,
-      required: false,
     },
     passwordResetToken: {
       type: String,
-      required: false,
     },
     passwordResetExpires: {
       type: Date,
-      required: false,
+    },
+    points: {
+      type: Number,
+      default: 0, // Default points set to 0
+    },
+    solvedChallenges: {
+      beginner: {
+        type: Number,
+        default: 0, // Tracks solved beginner-level challenges
+      },
+      intermediate: {
+        type: Number,
+        default: 0, // Tracks solved intermediate-level challenges
+      },
+      advanced: {
+        type: Number,
+        default: 0, // Tracks solved advanced-level challenges
+      },
     },
   },
   {
@@ -55,6 +61,9 @@ const userSchema = new mongoose.Schema(
     paranoid: true,
   }
 );
+
+// Remove the emailVerificationToken index here
+// userSchema.index({ emailVerificationToken: 1 });
 
 userSchema.index({ email: 1 });
 userSchema.index({ username: 1 });

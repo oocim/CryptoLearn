@@ -1,35 +1,4 @@
-<<<<<<< HEAD
-module.exports = (sequelize, DataTypes) => {
-    const UserChallengeProgresses = sequelize.define("UserChallengeProgresses", {
-        progressId: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true,
-        },
-        userId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'Users',
-                key: 'userId',
-            },
-        },
-        challengeId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'Challenges',
-                key: 'challengeId',
-            },
-        },
-        solved: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false,
-        },
-    });
-=======
 const mongoose = require("mongoose");
->>>>>>> 484da7d347588247ebfe2776e661c14f0e081b3b
 
 const userChallengeProgressSchema = new mongoose.Schema(
   {
