@@ -1,50 +1,49 @@
-import { Challenge, ChallengeCard } from '../Challenges'
+import { useEffect, useState } from 'react';
+import { Challenge, ChallengeCard } from '../Challenges';
 
-const intermediateChallenges: Challenge[] = [
-  {
-    id: 3,
-    title: "Vigenère Cipher",
-    description: "Decrypt this message using the Vigenère cipher. The key is a common three-letter word.",
-    ciphertext: "LXFOPVEFRNHR",
-    plaintext: "CRYPTOGRAPHY",
-    points: 250,
-    timeLimit: "15:00",
-    hint: "Try common three-letter words as keys, like 'THE' or 'AND'",
-    type: "Vigenère",
-    completed: false,
-  },
-  {
-    id: 4,
-    title: "Playfair Challenge",
-    description: "Decode this message encrypted with the Playfair cipher. The key phrase is 'MONARCHY'.",
-    ciphertext: "BMODZBXDNABEKUDMUIXMMOUVIF",
-    plaintext: "DEFENDTHEEASTWALLOFTHECASTLE",
-    points: 300,
-    timeLimit: "20:00",
-    hint: "Remember to handle 'J' as 'I' and use 'X' as a filler letter",
-    type: "Playfair",
-    completed: false,
-  },
-]
+export const fetchIntermediateChallenges = async (): Promise<Challenge[]> => {
+  try {
+    const response = await fetch("http://localhost:3000/challenges?category=Intermediate");
+    if (!response.ok) {
+      throw new Error('Failed to fetch challenges');
+    }
+    const data: Challenge[] = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching intermediate challenges:', error);
+    return [];
+  }
+};
 
 interface IntermediateChallengesProps {
-  activeChallengeId: number | null
-  setActiveChallengeId: (id: number | null) => void
-  onSubmit: (answer: string) => void
+  activeChallengeId: number | null;
+  setActiveChallengeId: (id: number | null) => void;
+  onSubmit: (answer: string) => void;
 }
 
 export default function IntermediateChallenges({ activeChallengeId, setActiveChallengeId, onSubmit }: IntermediateChallengesProps) {
+  const [intermediateChallenges, setIntermediateChallenges] = useState<Challenge[]>([]);
+
+  useEffect(() => {
+    const loadChallenges = async () => {
+      const challenges = await fetchIntermediateChallenges();
+      setIntermediateChallenges(challenges);
+    };
+    loadChallenges();
+  }, []);
+
   return (
     <div className="grid md:grid-cols-2 gap-6">
       {intermediateChallenges.map((challenge) => (
         <ChallengeCard
-          key={challenge.id}
+          key={challenge.challengeId}
           challenge={challenge}
-          isActive={activeChallengeId === challenge.id}
-          onActivate={() => setActiveChallengeId(challenge.id)}
+          isActive={activeChallengeId === challenge.challengeId}
+          onActivate={() => setActiveChallengeId(challenge.challengeId)}
           onSubmit={onSubmit}
         />
       ))}
     </div>
-  )
+  );
 }

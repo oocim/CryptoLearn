@@ -3,7 +3,7 @@ import { Challenge, ChallengeCard } from '../Challenges';
 
 export const fetchBeginnerChallenges = async (): Promise<Challenge[]> => {
   try {
-    const response = await fetch("http://localhost:3000/challenges/caesar/beginner");
+    const response = await fetch("http://localhost:3000/challenges?category=Beginner");
     if (!response.ok) {
       throw new Error('Failed to fetch challenges');
     }
@@ -25,14 +25,13 @@ interface BeginnerChallengesProps {
 export default function BeginnerChallenges({ activeChallengeId, setActiveChallengeId, onSubmit }: BeginnerChallengesProps) {
   const [beginnerChallenges, setBeginnerChallenges] = useState<Challenge[]>([]);
 
-  // Fetch challenges when component mounts
   useEffect(() => {
     const loadChallenges = async () => {
       const challenges = await fetchBeginnerChallenges();
       setBeginnerChallenges(challenges);
     };
     loadChallenges();
-  }, []); // Empty dependency array to run once on mount
+  }, []);
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
