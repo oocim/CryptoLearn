@@ -153,6 +153,31 @@ const SimpleSubstitutionCipherTab = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
+            <BookOpen className="mr-2 text-primary" />
+            How It Works
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-4">
+            The Simple Substitution Cipher creates a one-to-one mapping between letters. 
+            Each letter in the plaintext is replaced with its corresponding letter in 
+            the cipher alphabet. For decryption, we simply reverse the mapping.
+          </p>
+          <div className="bg-blue-50 p-4 rounded-md">
+            <h3 className="font-semibold mb-2">Key Features:</h3>
+            <ul className="list-disc list-inside space-y-2">
+              <li>Bidirectional mapping (each letter has a unique pair)</li>
+              <li>26! possible different keys</li>
+              <li>Preserves letter frequency patterns</li>
+              <li>Spaces and punctuation remain unchanged</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
             <Lock className="mr-2 text-primary" />
             Try It Yourself
           </CardTitle>
@@ -357,31 +382,6 @@ const SimpleSubstitutionCipherTab = () => {
           </CardContent>
         </Card>
       )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <BookOpen className="mr-2 text-primary" />
-            How It Works
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4">
-            The Simple Substitution Cipher creates a one-to-one mapping between letters. 
-            Each letter in the plaintext is replaced with its corresponding letter in 
-            the cipher alphabet. For decryption, we simply reverse the mapping.
-          </p>
-          <div className="bg-blue-50 p-4 rounded-md">
-            <h3 className="font-semibold mb-2">Key Features:</h3>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Bidirectional mapping (each letter has a unique pair)</li>
-              <li>26! possible different keys</li>
-              <li>Preserves letter frequency patterns</li>
-              <li>Spaces and punctuation remain unchanged</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
 
       <Card>
         <CardHeader>

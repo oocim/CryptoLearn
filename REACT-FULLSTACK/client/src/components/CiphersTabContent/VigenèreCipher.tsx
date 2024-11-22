@@ -130,6 +130,45 @@ const VigenereCipherTab = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
+            <BookOpen className="mr-2 text-primary" />
+            How It Works
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+              <div className="space-y-4">
+                <p>
+                  The Vigenère cipher is a polyalphabetic substitution cipher that uses a keyword
+                  to encrypt and decrypt text. Here's how it works:
+                </p>
+                
+                <div className="bg-blue-50 p-4 rounded-md">
+                  <h3 className="font-semibold mb-2">Encryption:</h3>
+                  <p>Each letter in the plaintext is shifted forward based on the corresponding letter in the keyword.</p>
+                  <div className="font-mono mt-2">
+                    Example with keyword "KEY":<br />
+                    K shifts by 10 (K is 10th letter)<br />
+                    E shifts by 4 (E is 4th letter)<br />
+                    Y shifts by 24 (Y is 24th letter)
+                  </div>
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-md">
+                  <h3 className="font-semibold mb-2">Decryption:</h3>
+                  <p>Each letter in the ciphertext is shifted backward using the same keyword pattern.</p>
+                  <div className="font-mono mt-2">
+                    Example with keyword "KEY":<br />
+                    K shifts back by 10<br />
+                    E shifts back by 4<br />
+                    Y shifts back by 24
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
             <Lock className="mr-2 text-primary" />
             Try It Yourself
           </CardTitle>
@@ -332,44 +371,6 @@ const VigenereCipherTab = () => {
         </Card>
         
       )}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <BookOpen className="mr-2 text-primary" />
-            How It Works
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-              <div className="space-y-4">
-                <p>
-                  The Vigenère cipher is a polyalphabetic substitution cipher that uses a keyword
-                  to encrypt and decrypt text. Here's how it works:
-                </p>
-                
-                <div className="bg-blue-50 p-4 rounded-md">
-                  <h3 className="font-semibold mb-2">Encryption:</h3>
-                  <p>Each letter in the plaintext is shifted forward based on the corresponding letter in the keyword.</p>
-                  <div className="font-mono mt-2">
-                    Example with keyword "KEY":<br />
-                    K shifts by 10 (K is 10th letter)<br />
-                    E shifts by 4 (E is 4th letter)<br />
-                    Y shifts by 24 (Y is 24th letter)
-                  </div>
-                </div>
-
-                <div className="bg-green-50 p-4 rounded-md">
-                  <h3 className="font-semibold mb-2">Decryption:</h3>
-                  <p>Each letter in the ciphertext is shifted backward using the same keyword pattern.</p>
-                  <div className="font-mono mt-2">
-                    Example with keyword "KEY":<br />
-                    K shifts back by 10<br />
-                    E shifts back by 4<br />
-                    Y shifts back by 24
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-      </Card>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">

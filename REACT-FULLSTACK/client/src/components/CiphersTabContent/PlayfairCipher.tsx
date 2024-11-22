@@ -178,6 +178,58 @@ const PlayfairCipherTab = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
+            <BookOpen className="mr-2 text-primary" />
+            How It Works
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+        <div className="space-y-4">
+            <p>
+              The Playfair cipher uses a 5x5 grid of letters constructed using a keyword. 
+              Pairs of letters from the plaintext are transformed according to their position in the grid.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-md">
+              <h3 className="font-semibold mb-2">Key Steps:</h3>
+              <ol className="list-decimal list-inside space-y-2">
+                <li>Create a 5x5 grid using the keyword (excluding duplicates) and fill with remaining alphabet letters (I/J share a cell).</li>
+                <li>Divide the plaintext into pairs of letters (digraphs). If a pair has the same letters or the message has an odd number of letters, insert 'X'.</li>
+                <li>For each pair, locate the letters in the grid and apply the following rules:
+                  <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
+                    <li>If in the same row: use letters to the right (wrapping around)</li>
+                    <li>If in the same column: use letters below (wrapping around)</li>
+                    <li>If in different rows and columns: form a rectangle and use the letters on the same row at the opposite corners</li>
+                  </ul>
+                </li>
+              </ol>
+            </div>
+            <div className="bg-blue-50 p-4 rounded-md">
+              <h3 className="font-semibold mb-2">Example:</h3>
+              <p className="mb-2">Key: MONARCHY, Plaintext: HELLO WORLD</p>
+              <div className="grid grid-cols-5 gap-1 mb-4">
+                {['M','O','N','A','R','C','H','Y','B','D','E','F','G','I/J','K','L','P','Q','S','T','U','V','W','X','Z'].map((char, i) => (
+                  <div key={i} className="w-8 h-8 bg-white rounded flex items-center justify-center font-mono">
+                    {char}
+                  </div>
+                ))}
+              </div>
+              <p className="mb-2">Encryption process:</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>HE → DM</li>
+                <li>LX → RO</li>
+                <li>LO → IV</li>
+                <li>WO → UV</li>
+                <li>RL → TG</li>
+                <li>DX → CP</li>
+              </ul>
+              <p className="mt-2">Ciphertext: DMROIVUVTGCP</p>
+            </div>
+          </div>  
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
             <Lock className="mr-2 text-primary" />
             Try It Yourself
           </CardTitle>
@@ -386,58 +438,6 @@ const PlayfairCipherTab = () => {
           </CardContent>
         </Card>
       )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <BookOpen className="mr-2 text-primary" />
-            How It Works
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-        <div className="space-y-4">
-            <p>
-              The Playfair cipher uses a 5x5 grid of letters constructed using a keyword. 
-              Pairs of letters from the plaintext are transformed according to their position in the grid.
-            </p>
-            <div className="bg-blue-50 p-4 rounded-md">
-              <h3 className="font-semibold mb-2">Key Steps:</h3>
-              <ol className="list-decimal list-inside space-y-2">
-                <li>Create a 5x5 grid using the keyword (excluding duplicates) and fill with remaining alphabet letters (I/J share a cell).</li>
-                <li>Divide the plaintext into pairs of letters (digraphs). If a pair has the same letters or the message has an odd number of letters, insert 'X'.</li>
-                <li>For each pair, locate the letters in the grid and apply the following rules:
-                  <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
-                    <li>If in the same row: use letters to the right (wrapping around)</li>
-                    <li>If in the same column: use letters below (wrapping around)</li>
-                    <li>If in different rows and columns: form a rectangle and use the letters on the same row at the opposite corners</li>
-                  </ul>
-                </li>
-              </ol>
-            </div>
-            <div className="bg-blue-50 p-4 rounded-md">
-              <h3 className="font-semibold mb-2">Example:</h3>
-              <p className="mb-2">Key: MONARCHY, Plaintext: HELLO WORLD</p>
-              <div className="grid grid-cols-5 gap-1 mb-4">
-                {['M','O','N','A','R','C','H','Y','B','D','E','F','G','I/J','K','L','P','Q','S','T','U','V','W','X','Z'].map((char, i) => (
-                  <div key={i} className="w-8 h-8 bg-white rounded flex items-center justify-center font-mono">
-                    {char}
-                  </div>
-                ))}
-              </div>
-              <p className="mb-2">Encryption process:</p>
-              <ul className="list-disc list-inside space-y-1">
-                <li>HE → DM</li>
-                <li>LX → RO</li>
-                <li>LO → IV</li>
-                <li>WO → UV</li>
-                <li>RL → TG</li>
-                <li>DX → CP</li>
-              </ul>
-              <p className="mt-2">Ciphertext: DMROIVUVTGCP</p>
-            </div>
-          </div>  
-        </CardContent>
-      </Card>
 
       <Card>
         <CardHeader>

@@ -210,6 +210,46 @@ const RailFenceCipherTab = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
+            <BookOpen className="mr-2 text-primary" />
+            How It Works
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-4">
+            The Rail Fence cipher works by writing the plaintext in a zigzag pattern 
+            across a number of "rails" and then reading off each rail to form the ciphertext. 
+            For decryption, the process is reversed.
+          </p>
+          <div className="bg-blue-50 p-4 rounded-md">
+            <h3 className="font-semibold mb-2">Example:</h3>
+            <p>With 3 rails and the plaintext "HELLO WORLD":</p>
+            <div className="mt-2 grid grid-cols-1 gap-2">
+              {[
+                ['H', '.', '.', '.', 'O', '.', '.', '.', 'R', '.', '.'],
+                ['.', 'E', '.', 'L', '.', 'W', '.', 'L', '.', 'D', '.'],
+                ['.', '.', 'L', '.', '.', '.', 'O', '.', '.', '.', '.']
+              ].map((row, rowIndex) => (
+                <div key={rowIndex} className="flex justify-center">
+                  {row.map((char, colIndex) => (
+                    <div
+                      key={colIndex}
+                      className={`w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md font-mono text-lg
+                        ${char !== '.' ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground'}`}
+                    >
+                      {char}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <p className="mt-4">Ciphertext: HORELWLOLD</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
             <Lock className="mr-2 text-primary" />
             Try It Yourself
           </CardTitle>
@@ -389,45 +429,6 @@ const RailFenceCipherTab = () => {
         </Card>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <BookOpen className="mr-2 text-primary" />
-            How It Works
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4">
-            The Rail Fence cipher works by writing the plaintext in a zigzag pattern 
-            across a number of "rails" and then reading off each rail to form the ciphertext. 
-            For decryption, the process is reversed.
-          </p>
-          <div className="bg-blue-50 p-4 rounded-md">
-            <h3 className="font-semibold mb-2">Example:</h3>
-            <p>With 3 rails and the plaintext "HELLO WORLD":</p>
-            <div className="mt-2 grid grid-cols-1 gap-2">
-              {[
-                ['H', '.', '.', '.', 'O', '.', '.', '.', 'R', '.', '.'],
-                ['.', 'E', '.', 'L', '.', 'W', '.', 'L', '.', 'D', '.'],
-                ['.', '.', 'L', '.', '.', '.', 'O', '.', '.', '.', '.']
-              ].map((row, rowIndex) => (
-                <div key={rowIndex} className="flex justify-center">
-                  {row.map((char, colIndex) => (
-                    <div
-                      key={colIndex}
-                      className={`w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md font-mono text-lg
-                        ${char !== '.' ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground'}`}
-                    >
-                      {char}
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-            <p className="mt-4">Ciphertext: HORELWLOLD</p>
-          </div>
-        </CardContent>
-      </Card>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
