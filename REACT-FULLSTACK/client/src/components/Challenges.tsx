@@ -23,7 +23,6 @@ export interface Challenge {
   cipherType: string
   cipherMode: string
   completed: boolean
-  difficulty?: string
 }
 
 export interface UserChallengeProgress {
@@ -202,6 +201,18 @@ export default function Challenges() {
   const [currentUserId, setCurrentUserId] = useState(3) //babaguhin if may login na
   const [leaderboardEntries, setLeaderboardEntries] = useState<LeaderboardEntry[]>([])
 
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId')
+    const storedUserPoints = localStorage.getItem('userPoints')
+    const storedSolvedChallenges = localStorage.getItem('totalSolvedChallenges')
+
+    if (storedUserId && storedUserPoints && storedSolvedChallenges) {
+      setIsLoggedIn(true)
+      setCurrentUserId(Number(storedUserId))
+      setUserPoints(Number(storedUserPoints))
+    }
+  }, [])
+
   const fetchLeaderboardData = useCallback(async () => {
     try {
         const response = await fetch('http://localhost:3000/user/leaderboards');
@@ -219,27 +230,6 @@ export default function Challenges() {
         console.error('Error fetching leaderboard data:', error);
     }
 }, []);
-
-useEffect(() => {
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch(`http://localhost:3000/users/${currentUserId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch user data');
-      }
-      const data = await response.json();
-      setUserPoints(data.points); // Update user points
-      setSolvedChallenges(data.solvedChallenges); // Set solved challenges
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
-  if (currentUserId) {
-    fetchUserData(); // Fetch user data when currentUserId changes
-  }
-}, [currentUserId]);
-
 
   useEffect(() => {
     fetchLeaderboardData() // Initial fetch
@@ -262,48 +252,46 @@ useEffect(() => {
 
   const handleSubmit = async (answer: string) => {
     if (activeChallenge) {
-      const isCorrect = answer.trim().toLowerCase() === activeChallenge.plaintext.trim().toLowerCase();
-  
+      const updatedChallenges = challenges.map(c => 
+        c.challengeId === activeChallenge.challengeId ? { ...c, completed: isCorrect } : c
+      )
+      setChallenges(updatedChallenges)
+
+
+
+      const isCorrect = answer.trim().toLowerCase() === activeChallenge.plaintext.trim().toLowerCase()
+
       if (isCorrect) {
         // Update user points
-        const newPoints = userPoints + activeChallenge.points;
-        setUserPoints(newPoints);
-  
-        // Extract the difficulty from the active challenge or use a fallback
-        const challengeDifficulty = activeChallenge.difficulty || 'beginner';  // Default to 'beginner'
-  
-        // Send the points and difficulty to the server
+        const newPoints = activeChallenge.points
+        setUserPoints(newPoints)
+
         try {
-          const response = await fetch("http://localhost:3000/users/add-points", {
+          const response = await fetch("http://localhost:3000/updateprogress", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
+            body: JSON.stringify({ 
               userId: currentUserId,
-              difficulty: challengeDifficulty,
-              pointsEarned: activeChallenge.points,
+              challengeId: activeChallenge.challengeId,
+              solved: true
             }),
-          });
-  
+          })
+
           if (!response.ok) {
-            throw new Error('Failed to update points');
+            throw new Error('Failed to update points')
           }
-  
-          console.log('Points updated successfully');
+
+          console.log('Points updated successfully')
+          await fetchLeaderboardData()
         } catch (error) {
-          console.error('Error updating points:', error);
+          console.error('Error updating points:', error)
         }
-  
-        // Update challenge completion status
-        const updatedChallenges = challenges.map(c =>
-          c.challengeId === activeChallenge.challengeId ? { ...c, completed: isCorrect } : c
-        );
-        setChallenges(updatedChallenges);
       }
+
     }
-  };
-  
+  }
 
   const handleSignUp = (username: string, password: string) => {
     // Implement sign up logic here
@@ -329,21 +317,43 @@ useEffect(() => {
       // Assuming the response contains a token or user data
       const data = await response.json();
       
-      // Set the user id or token from the response (or any other data you need)
-      setCurrentUserId(data.userId); // Or any appropriate data from the response
-      setIsLoggedIn(true); // Set login state to true
+      // Fetch the user-specific data from the API
+      const userInfoResponse = await fetch(`http://localhost:3000/users/user-info/${username}`);
+      
+      if (!userInfoResponse.ok) {
+        throw new Error('Failed to fetch user info');
+      }
+  
+      const userInfo = await userInfoResponse.json();
+      
+      // Store the user info and login state in localStorage
       localStorage.setItem('userId', data.userId);
+      localStorage.setItem('totalSolvedChallenges', userInfo.totalSolvedChallenges);
+      localStorage.setItem('userPoints', userInfo.points);
+      
+      // Update state
+      setCurrentUserId(data.userId);
+      setUserPoints(userInfo.points);
+      setIsLoggedIn(true);
   
       console.log('Login successful');
+      console.log(localStorage.userId);
+      console.log(localStorage.totalSolvedChallenges);
+      console.log(localStorage.points);
     } catch (error) {
       console.error('Error during login:', error);
-      // Optionally display a message to the user
     }
   };
   
+  
 
   const handleLogout = () => {
+    localStorage.removeItem('userId')
+    localStorage.removeItem('totalSolvedChallenges')
+    localStorage.removeItem('userPoints')
     setIsLoggedIn(false)
+    setCurrentUserId(null)
+    setUserPoints(0)
   }
 
   if (!isLoggedIn) {
@@ -380,11 +390,11 @@ useEffect(() => {
       }
   
       console.log('User progress updated successfully');
+      // You might want to update your local state here as well
     } catch (error) {
       console.error('Error updating user progress:', error);
     }
   };
-  
 
   return (
     <div className="space-y-6">
@@ -466,7 +476,7 @@ useEffect(() => {
               <div className="text-sm text-muted-foreground">Challenges Completed</div>
               <div className="text-2xl font-semibold flex items-center mt-1">
                 <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                {challenges.filter(c => c.completed).length}
+                {localStorage.totalSolvedChallenges}
               </div>
             </div>
             <div className="bg-muted p-4 rounded-md">

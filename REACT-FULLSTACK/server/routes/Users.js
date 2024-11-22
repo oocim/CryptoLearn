@@ -188,4 +188,31 @@ router.post("/add-points", async (req, res) => {
     }
 });
 
+// Get user details by username with total solved challenges
+router.get("/user-info/:username", async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        // Find the user by their username
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Calculate the total number of solved challenges
+        const totalSolvedChallenges = Object.values(user.solvedChallenges).reduce((acc, count) => acc + count, 0);
+
+        // Return the user info with the total solved challenges and points
+        res.json({
+            _id: user._id,
+            totalSolvedChallenges,
+            points: user.points,
+        });
+    } catch (error) {
+        console.error("Error fetching user info:", error);
+        res.status(500).json({ error: "An error occurred while fetching user info" });
+    }
+});
+
+
 module.exports = router;
