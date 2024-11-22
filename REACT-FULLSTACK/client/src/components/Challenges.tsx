@@ -23,6 +23,7 @@ export interface Challenge {
   cipherType: string
   cipherMode: string
   completed: boolean
+  difficulty?: string
 }
 
 export interface UserChallengeProgress {
@@ -219,6 +220,27 @@ export default function Challenges() {
     }
 }, []);
 
+useEffect(() => {
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/users/${currentUserId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      const data = await response.json();
+      setUserPoints(data.points); // Update user points
+      setSolvedChallenges(data.solvedChallenges); // Set solved challenges
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  if (currentUserId) {
+    fetchUserData(); // Fetch user data when currentUserId changes
+  }
+}, [currentUserId]);
+
+
   useEffect(() => {
     fetchLeaderboardData() // Initial fetch
 
@@ -240,46 +262,48 @@ export default function Challenges() {
 
   const handleSubmit = async (answer: string) => {
     if (activeChallenge) {
-      const updatedChallenges = challenges.map(c => 
-        c.challengeId === activeChallenge.challengeId ? { ...c, completed: isCorrect } : c
-      )
-      setChallenges(updatedChallenges)
-
-
-
-      const isCorrect = answer.trim().toLowerCase() === activeChallenge.plaintext.trim().toLowerCase()
-
+      const isCorrect = answer.trim().toLowerCase() === activeChallenge.plaintext.trim().toLowerCase();
+  
       if (isCorrect) {
         // Update user points
-        const newPoints = activeChallenge.points
-        setUserPoints(newPoints)
-
+        const newPoints = userPoints + activeChallenge.points;
+        setUserPoints(newPoints);
+  
+        // Extract the difficulty from the active challenge or use a fallback
+        const challengeDifficulty = activeChallenge.difficulty || 'beginner';  // Default to 'beginner'
+  
+        // Send the points and difficulty to the server
         try {
-          const response = await fetch("http://localhost:3000/updateprogress", {
+          const response = await fetch("http://localhost:3000/users/add-points", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
               userId: currentUserId,
-              challengeId: activeChallenge.challengeId,
-              solved: true
+              difficulty: challengeDifficulty,
+              pointsEarned: activeChallenge.points,
             }),
-          })
-
+          });
+  
           if (!response.ok) {
-            throw new Error('Failed to update points')
+            throw new Error('Failed to update points');
           }
-
-          console.log('Points updated successfully')
-          await fetchLeaderboardData()
+  
+          console.log('Points updated successfully');
         } catch (error) {
-          console.error('Error updating points:', error)
+          console.error('Error updating points:', error);
         }
+  
+        // Update challenge completion status
+        const updatedChallenges = challenges.map(c =>
+          c.challengeId === activeChallenge.challengeId ? { ...c, completed: isCorrect } : c
+        );
+        setChallenges(updatedChallenges);
       }
-
     }
-  }
+  };
+  
 
   const handleSignUp = (username: string, password: string) => {
     // Implement sign up logic here
@@ -356,11 +380,11 @@ export default function Challenges() {
       }
   
       console.log('User progress updated successfully');
-      // You might want to update your local state here as well
     } catch (error) {
       console.error('Error updating user progress:', error);
     }
   };
+  
 
   return (
     <div className="space-y-6">
@@ -442,7 +466,7 @@ export default function Challenges() {
               <div className="text-sm text-muted-foreground">Challenges Completed</div>
               <div className="text-2xl font-semibold flex items-center mt-1">
                 <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                3/10
+                {challenges.filter(c => c.completed).length}
               </div>
             </div>
             <div className="bg-muted p-4 rounded-md">
