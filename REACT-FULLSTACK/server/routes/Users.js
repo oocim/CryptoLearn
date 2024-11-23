@@ -152,17 +152,11 @@ router.post("/login", async (req, res) => {
 
 // Add points to a user and track solved challenges
 router.post("/add-points", async (req, res) => {
-    const { userId, difficulty, pointsEarned } = req.body;
+    const { userId, pointsEarned, challengeId } = req.body;
 
     // Validate input data
-    if (!userId || !difficulty || !pointsEarned) {
-        return res.status(400).json({ error: "User ID, difficulty, and points are required" });
-    }
-
-    // Validate difficulty
-    const validDifficulties = ["beginner", "intermediate", "advanced"];
-    if (!validDifficulties.includes(difficulty)) {
-        return res.status(400).json({ error: "Invalid difficulty level" });
+    if (!userId || !pointsEarned || !challengeId) {
+        return res.status(400).json({ error: "User ID, points, and challenge ID are required" });
     }
 
     try {
@@ -172,11 +166,19 @@ router.post("/add-points", async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
+        // Check if the challenge is already completed
+        if (user.completedChallenges.includes(challengeId)) {
+            return res.status(400).json({ error: "Challenge already completed" });
+        }
+
         // Add points to the user's total points
         user.points += pointsEarned;
 
-        // Increment the count of solved challenges based on difficulty level
-        user.solvedChallenges[difficulty] += 1;
+        // Increment the total number of solved challenges
+        user.solvedChallenges += 1;
+
+        // Add the challengeId to the completedChallenges array
+        user.completedChallenges.push(challengeId);
 
         // Save the updated user data
         await user.save();
@@ -187,6 +189,7 @@ router.post("/add-points", async (req, res) => {
         res.status(500).json({ error: "An error occurred while adding points" });
     }
 });
+
 
 // Get user details by username with total solved challenges
 router.get("/user-info/:username", async (req, res) => {
@@ -199,20 +202,19 @@ router.get("/user-info/:username", async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        // Calculate the total number of solved challenges
-        const totalSolvedChallenges = Object.values(user.solvedChallenges).reduce((acc, count) => acc + count, 0);
-
         // Return the user info with the total solved challenges and points
         res.json({
             _id: user._id,
-            totalSolvedChallenges,
+            totalSolvedChallenges: user.solvedChallenges, // Directly use the solvedChallenges count
             points: user.points,
+            completedChallenges: user.completedChallenges, // Optionally, include completed challenges list
         });
     } catch (error) {
         console.error("Error fetching user info:", error);
         res.status(500).json({ error: "An error occurred while fetching user info" });
     }
 });
+
 
 
 module.exports = router;

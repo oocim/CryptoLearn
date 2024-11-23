@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
         validator: function (v) {
           return /\S+@\S+\.\S+/.test(v);
         },
-        message: props => `${props.value} is not a valid email!`
+        message: (props) => `${props.value} is not a valid email!`,
       },
     },
     passwordHash: {
@@ -39,21 +39,15 @@ const userSchema = new mongoose.Schema(
     },
     points: {
       type: Number,
-      default: 0, // Default points set to 0
+      default: 0,
     },
     solvedChallenges: {
-      beginner: {
-        type: Number,
-        default: 0, // Tracks solved beginner-level challenges
-      },
-      intermediate: {
-        type: Number,
-        default: 0, // Tracks solved intermediate-level challenges
-      },
-      advanced: {
-        type: Number,
-        default: 0, // Tracks solved advanced-level challenges
-      },
+      type: Number, // Total count of challenges solved
+      default: 0,   // Default is 0
+    },
+    completedChallenges: {
+      type: [String], // Array of strings to store challenge IDs
+      default: [],    // Initialize as an empty array
     },
   },
   {
@@ -61,9 +55,6 @@ const userSchema = new mongoose.Schema(
     paranoid: true,
   }
 );
-
-// Remove the emailVerificationToken index here
-// userSchema.index({ emailVerificationToken: 1 });
 
 userSchema.index({ email: 1 });
 userSchema.index({ username: 1 });

@@ -232,16 +232,6 @@ export default function Challenges() {
 }, []);
 
   useEffect(() => {
-    fetchLeaderboardData() // Initial fetch
-
-    // Set up polling interval
-    const intervalId = setInterval(fetchLeaderboardData, 5000) // Fetch every 5 seconds
-
-    // Clean up interval on component unmount
-    return () => clearInterval(intervalId)
-  }, [fetchLeaderboardData])
-
-  useEffect(() => {
     if (activeChallengeId !== null) {
       const challenge = challenges.find(c => c.challengeId === activeChallengeId)
       setActiveChallenge(challenge || null)
@@ -250,48 +240,33 @@ export default function Challenges() {
     }
   }, [activeChallengeId, challenges])
 
-  const handleSubmit = async (answer: string) => {
-    if (activeChallenge) {
-      const updatedChallenges = challenges.map(c => 
-        c.challengeId === activeChallenge.challengeId ? { ...c, completed: isCorrect } : c
-      )
-      setChallenges(updatedChallenges)
-
-
-
-      const isCorrect = answer.trim().toLowerCase() === activeChallenge.plaintext.trim().toLowerCase()
-
-      if (isCorrect) {
-        // Update user points
-        const newPoints = activeChallenge.points
-        setUserPoints(newPoints)
-
-        try {
-          const response = await fetch("http://localhost:3000/updateprogress", {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-              userId: currentUserId,
-              challengeId: activeChallenge.challengeId,
-              solved: true
-            }),
-          })
-
-          if (!response.ok) {
-            throw new Error('Failed to update points')
-          }
-
-          console.log('Points updated successfully')
-          await fetchLeaderboardData()
-        } catch (error) {
-          console.error('Error updating points:', error)
-        }
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/users/add-points", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: localStorage.userId,
+          pointsEarned: activeChallenge.points,
+          challengeId: activeChallenge.challengeId,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to submit answer');
       }
-
+  
+      console.log('Points added successfully');
+      const result = await response.json();
+      console.log('Server Response:', result);
+  
+      // You may add any further state updates or feedback here if needed
+    } catch (error) {
+      console.error('Error submitting answer:', error);
     }
-  }
+  };
 
   const handleSignUp = (username: string, password: string) => {
     // Implement sign up logic here
