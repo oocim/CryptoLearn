@@ -107,24 +107,80 @@ export default function About() {
       </Accordion>
 
       <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <History className="mr-2" />
-            A Brief History of Cryptography
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>Ancient times: Simple substitution ciphers used by Julius Caesar</li>
-            <li>Middle Ages: Development of polyalphabetic ciphers</li>
-            <li>World War II: The breaking of the Enigma machine code</li>
-            <li>1970s: Development of DES (Data Encryption Standard)</li>
-            <li>1990s: Rise of public-key cryptography (RSA)</li>
-            <li>2000s: Advanced Encryption Standard (AES) becomes the new standard</li>
-            <li>Present: Quantum cryptography and post-quantum cryptography research</li>
-          </ul>
-        </CardContent>
-      </Card>
+  <CardHeader>
+    <CardTitle className="flex items-center">
+      <History className="mr-2" />
+      A Brief History of Cryptography
+    </CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="relative flex flex-col items-start">
+      {/* Timeline vertical line */}
+      <div className="absolute top-0 left-3 h-full border-l-2 border-blue-500"></div>
+
+      {/* Timeline Points */}
+      <ul className="space-y-6">
+        {/* Timeline point 1 */}
+        <li className="flex items-center">
+          <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white"></div>
+          <div className="ml-4">
+            <p className="font-bold">Ancient times</p>
+            <p>Simple substitution ciphers used by Julius Caesar</p>
+          </div>
+        </li>
+        {/* Timeline point 2 */}
+        <li className="flex items-center">
+          <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white"></div>
+          <div className="ml-4">
+            <p className="font-bold">Middle Ages</p>
+            <p>Development of polyalphabetic ciphers</p>
+          </div>
+        </li>
+        {/* Timeline point 3 */}
+        <li className="flex items-center">
+          <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white"></div>
+          <div className="ml-4">
+            <p className="font-bold">World War II</p>
+            <p>The breaking of the Enigma machine code</p>
+          </div>
+        </li>
+        {/* Timeline point 4 */}
+        <li className="flex items-center">
+          <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white"></div>
+          <div className="ml-4">
+            <p className="font-bold">1970s</p>
+            <p>Development of DES (Data Encryption Standard)</p>
+          </div>
+        </li>
+        {/* Timeline point 5 */}
+        <li className="flex items-center">
+          <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white"></div>
+          <div className="ml-4">
+            <p className="font-bold">1990s</p>
+            <p>Rise of public-key cryptography (RSA)</p>
+          </div>
+        </li>
+        {/* Timeline point 6 */}
+        <li className="flex items-center">
+          <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white"></div>
+          <div className="ml-4">
+            <p className="font-bold">2000s</p>
+            <p>Advanced Encryption Standard (AES) becomes the new standard</p>
+          </div>
+        </li>
+        {/* Timeline point 7 */}
+        <li className="flex items-center">
+          <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white"></div>
+          <div className="ml-4">
+            <p className="font-bold">Present</p>
+            <p>Quantum cryptography and post-quantum cryptography research</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </CardContent>
+</Card>
+
 
       <h2 className="text-3xl font-semibold mb-4">Meet the Developers</h2>
       <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -170,7 +226,7 @@ export default function About() {
               <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Aldrich" />
               <AvatarFallback>EH</AvatarFallback>
             </Avatar>
-            <CardTitle className="text-center">Aldrich miel A. Arenas</CardTitle>
+            <CardTitle className="text-center">Aldrich Amiel A. Arenas</CardTitle>
             <CardDescription className="text-center">Backend Developer</CardDescription>
           </CardHeader>
           <CardContent>

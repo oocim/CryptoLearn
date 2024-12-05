@@ -4,6 +4,7 @@ import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '../ui
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Play, RotateCcw, History, Lock, ArrowUp, ArrowDown, BookOpen, ChevronLeft, ChevronRight, KeyRound, PlayCircle, PauseCircle, X } from 'lucide-react'
+import infoIcon from './i.png';
 
 // Define Step interface without highlightIndex and highlightShiftedIndex
 interface Step {
@@ -337,27 +338,39 @@ const CaesarCipherTab = () => {
         </Card>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <History className="mr-2 text-primary" />
-            Security Level
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <h3 className="font-semibold mb-2">Security Level: Basic</h3>
-          <div className="flex items-center mb-4">
-            <div className="h-2 w-24 bg-destructive rounded-full" />
-            <div className="h-2 w-24 bg-muted rounded-full ml-1" />
-            <div className="h-2 w-24 bg-muted rounded-full ml-1" />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            The Caesar cipher is easily broken and should only be used for 
-            educational purposes. It can be cracked using frequency analysis 
-            or by trying all 25 possible shifts.
-          </p>
-        </CardContent>
-      </Card>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <History className="mr-2 text-primary" />
+          Security Level
+          <span className="ml-2 relative group flex items-center">
+            {/* Image icon */}
+            <img src={infoIcon} alt="Info" className="w-4 h-4 cursor-pointer" />
+            
+            {/* Tooltip */}
+            <div className="absolute hidden group-hover:flex bg-gray-700 text-white text-xs rounded px-2 py-1 top-0 left-1/2 transform -translate-x-1/2 -translate-y-full mt-2 w-max">
+              <span className="flex items-center whitespace-nowrap">
+                Security Level refers to the difficulty of decrypting the cipher method
+              </span>
+            </div>
+          </span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <h3 className="font-semibold mb-2">Security Level: Basic</h3>
+        <div className="flex items-center mb-4">
+          <div className="h-2 w-24 bg-destructive rounded-full" />
+          <div className="h-2 w-24 bg-muted rounded-full ml-1" />
+          <div className="h-2 w-24 bg-muted rounded-full ml-1" />
+        </div>
+        <p className="text-sm text-muted-foreground">
+          The Caesar cipher is easily broken and should only be used for 
+          educational purposes. It can be cracked using frequency analysis 
+          or by trying all 25 possible shifts.
+        </p>
+      </CardContent>
+    </Card>
+
     </TabsContent>
   )
 }
