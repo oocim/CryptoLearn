@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '../ui
 import { Button } from '../ui/button'
 import { Play, RotateCcw, BookOpen, Lock, History, Shuffle, ArrowDown, ArrowUp, 
   Fingerprint, ArrowRight, ChevronLeft, ChevronRight, PlayCircle, PauseCircle, X } from 'lucide-react'
-  import infoIcon from './i.png';
+import infoIcon from './i.png';
 
 // Define Step interface
 interface Step {
@@ -18,10 +18,11 @@ interface Step {
     from: string;
     to: string;
   };
+  isFinalStep?: boolean;
 }
 
 const SimpleSubstitutionCipherTab = () => {
-  const [inputText, setInputText] = useState('')
+  const [inputText, setInputText] = useState('Hello World')
   const [output, setOutput] = useState('')
   const [mode, setMode] = useState<'encrypt' | 'decrypt'>('encrypt')
   const [showBreakdown, setShowBreakdown] = useState(false)
@@ -88,6 +89,17 @@ const SimpleSubstitutionCipherTab = () => {
       } else {
         result = [...result, char];
       }
+    });
+  
+    // Add final step to show complete result
+    steps.push({
+      title: "Final Result",
+      description: `Complete ${isDecrypt ? 'Decrypted' : 'Encrypted'} Text`,
+      text: normalizedText.split(''),
+      result: result,
+      currentIndex: -1,
+      detail: `Entire text has been ${isDecrypt ? 'decrypted' : 'encrypted'}`,
+      isFinalStep: true
     });
   
     return steps;
@@ -229,10 +241,10 @@ const SimpleSubstitutionCipherTab = () => {
                 <div key={groupIndex} className="flex items-center">
                   {group.map(([plaintext, ciphertext], index) => (
                     <React.Fragment key={plaintext}>
-                      <div className="flex items-center bg-background rounded-md px-3 py-1.5">
+                      <div className="flex items-center border bg-white rounded-md px-3 py-1.5">
                         <div className="font-mono text-base font-medium w-6 text-center">{plaintext}</div>
-                        <ArrowRight className="mx-2 h-4 w-4 text-primary" />
-                        <div className="font-mono text-base font-medium w-6 text-center">{ciphertext}</div>
+                        <ArrowRight className="mx-2 h-4 w-4" />
+                        <div className="font-mono text-base text-primary font-medium w-6 text-center">{ciphertext}</div>
                       </div>
                       {index < group.length - 1 && (
                         <div className="mx-3 h-6 w-px bg-border" />
@@ -259,7 +271,7 @@ const SimpleSubstitutionCipherTab = () => {
 
           <div className="flex space-x-4 mb-4">
             <Button onClick={handleOperation}>
-              <Play className="mr-2 h-4 w-4" />
+              <Play className="mr-2 h-4 w-4 " />
               {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'}
             </Button>
             <Button
@@ -277,7 +289,7 @@ const SimpleSubstitutionCipherTab = () => {
           </div>
 
           {output && (
-            <div className="bg-muted p-4 rounded-md">
+            <div className="bg-blue-50 p-4 rounded-md">
               <label className="block text-sm font-medium mb-2">Result:</label>
               <div className="font-mono break-all">{output}</div>
             </div>
@@ -305,14 +317,14 @@ const SimpleSubstitutionCipherTab = () => {
               <p className="text-muted-foreground">{steps[currentStep].description}</p>
             </div>
 
-            <div className="bg-muted p-8 rounded-lg mb-6">
+            <div className="bg-blue-50 p-8 rounded-lg mb-6">
               <div className="flex flex-col space-y-4">
                 <div className="flex justify-center space-x-2">
                   {steps[currentStep].text.map((char, i) => (
                     <div
                       key={`text-${i}`}
                       className={`w-8 h-8 flex items-center justify-center rounded-md font-mono text-lg
-                        ${i === steps[currentStep].currentIndex ? 'bg-primary text-primary-foreground font-bold' : 'bg-background'}`}
+                        ${i === steps[currentStep].currentIndex ? 'bg-primary text-primary-foreground font-bold' : 'bg-white'}`}
                     >
                       {char}
                     </div>
@@ -323,7 +335,11 @@ const SimpleSubstitutionCipherTab = () => {
                     <div
                       key={`result-${i}`}
                       className={`w-8 h-8 flex items-center justify-center rounded-md font-mono text-lg
-                        ${i === steps[currentStep].currentIndex ? 'bg-accent text-accent-foreground font-bold' : 'bg-background'}`}
+                        ${
+                          (steps[currentStep].isFinalStep || i === steps[currentStep].currentIndex)
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'bg-white'
+                        }`}
                     >
                       {char || ''}
                     </div>
@@ -334,15 +350,17 @@ const SimpleSubstitutionCipherTab = () => {
 
             {steps[currentStep].substitution && (
               <div className="bg-accent/10 p-4 rounded-md mb-6 flex items-center justify-center space-x-4">
-                <span className="font-mono text-2xl">{steps[currentStep].substitution.from}</span>
+                <div className="w-8 h-8 flex items-center justify-center border rounded-md font-mono text-2xl">
+                  {steps[currentStep].substitution.from}
+                </div>
                 <ArrowRight className="h-6 w-6 text-primary" />
-                <span className="font-mono text-2xl text-primary">
+                <div className="w-8 h-8 flex items-center justify-center border rounded-md font-mono text-2xl text-primary">
                   {steps[currentStep].substitution.to}
-                </span>
+                </div>
               </div>
             )}
 
-            <div className="bg-muted p-4 rounded-md mb-6">
+            <div className="bg-blue-50 p-4 rounded-md mb-6">
               <p className="text-foreground font-mono">{steps[currentStep].detail}</p>
             </div>
 
@@ -358,7 +376,7 @@ const SimpleSubstitutionCipherTab = () => {
             <div className="flex space-x-2">
               <Button
                 onClick={() => setIsPlaying(!isPlaying)}
-                variant="outline"
+                variant="default"
               >
                 {isPlaying ? (
                   <>

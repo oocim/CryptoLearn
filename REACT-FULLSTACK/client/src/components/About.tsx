@@ -3,26 +3,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Button } from "./ui/button"
 import { Link } from 'react-router-dom';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion"
-import { BookOpen, Lock, Shield, History, Users, Brain, Code, Github, Linkedin, Twitter } from 'lucide-react'
+import { BookOpen, Lock, Shield, History, ChartBar, Brain, Github, Linkedin, Twitter } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import SeanImage from '../assets/Sean.jpg';
+import AldImage from '../assets/Aldrich.jpg';
+import MicoImage from '../assets/Mico.jpg';
 
 export default function About() {
   return (
     <div className="container mx-auto px-4 py-8">      
       <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="text-2xl text-primary">About CryptoLearn</CardTitle>
-          <CardDescription>Empowering the world through cryptography education</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-lg">
-            CryptoLearn is dedicated to making cryptography accessible to everyone. We believe that understanding 
-            the principles of secure communication is crucial in our digital age. Through interactive lessons, 
-            challenging puzzles, and a supportive community, we aim to demystify the world of cryptography and 
-            inspire the next generation of cybersecurity experts.
-          </p>
-        </CardContent>
-      </Card>
+  <CardHeader>
+    <CardTitle className="text-2xl text-primary">About CryptoLearn</CardTitle>
+    <CardDescription>Empowering the world through cryptography education</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p className="text-lg">
+      CryptoLearn is dedicated to making cryptography accessible to everyone. We believe that understanding 
+      the principles of secure communication is crucial in our digital age. Through interactive lessons, 
+      challenging puzzles, and a supportive community, we aim to demystify the world of cryptography and 
+      inspire the next generation of cybersecurity experts.
+    </p>
+  </CardContent>
+</Card>
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <Card>
@@ -61,17 +64,18 @@ export default function About() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Shield className="mr-2 text-primary" />
-              Challenge
+              <ChartBar className="mr-2 text-primary" />
+              Progress
             </CardTitle>
           </CardHeader>
           <CardContent>
-            Test your skills with our cryptography challenges and climb the leaderboard.
+            Track your learning journey with detailed progress reports and achievements.
           </CardContent>
         </Card>
       </div>
 
-      <h2 className="text-3xl font-semibold mb-4 text-primary">Cryptography FAQ</h2>
+
+      <h2 className="text-3xl font-semibold mb-4 ">Cryptography FAQ</h2>
       <Accordion type="single" collapsible className="mb-8">
         <AccordionItem value="item-1">
           <AccordionTrigger>What is cryptography?</AccordionTrigger>
@@ -180,12 +184,12 @@ export default function About() {
 </Card>
 
 
-      <h2 className="text-3xl font-semibold mb-4 text-primary">Meet the Developers</h2>
+      <h2 className="text-3xl font-semibold mb-4">Meet the Developers</h2>
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader>
             <Avatar className="w-24 h-24 mx-auto mb-4">
-              <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Mico" />
+              <AvatarImage src={MicoImage} alt="Mico" />
               <AvatarFallback>AC</AvatarFallback>
             </Avatar>
             <CardTitle className="text-center">Mici Raphael F. Cuarto</CardTitle>
@@ -203,7 +207,7 @@ export default function About() {
         <Card>
           <CardHeader>
             <Avatar className="w-24 h-24 mx-auto mb-4">
-              <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Sean" />
+              <AvatarImage src={SeanImage} alt="Sean" />
               <AvatarFallback>BS</AvatarFallback>
             </Avatar>
             <CardTitle className="text-center">Sean Kyron Z. Briones</CardTitle>
@@ -221,7 +225,7 @@ export default function About() {
         <Card>
           <CardHeader>
             <Avatar className="w-24 h-24 mx-auto mb-4">
-              <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Aldrich" />
+              <AvatarImage src={AldImage} alt="Aldrich" />
               <AvatarFallback>EH</AvatarFallback>
             </Avatar>
             <CardTitle className="text-center">Aldrich Amiel A. Arenas</CardTitle>

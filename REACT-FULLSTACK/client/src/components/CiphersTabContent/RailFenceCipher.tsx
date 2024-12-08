@@ -235,7 +235,7 @@ const RailFenceCipherTab = () => {
                     <div
                       key={colIndex}
                       className={`w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md font-mono text-lg
-                        ${char !== '.' ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground'}`}
+                        ${char !== '.' ? 'bg-primary text-primary-foreground' : 'bg-white text-foreground'}`}
                     >
                       {char}
                     </div>
@@ -336,7 +336,7 @@ const RailFenceCipherTab = () => {
           </div>
 
           {output && (
-            <div className="bg-muted p-4 rounded-md">
+            <div className="bg-blue-50 p-4 rounded-md">
               <label className="block text-sm font-medium mb-2">Result:</label>
               <div className="font-mono break-all">{output}</div>
             </div>
@@ -364,7 +364,7 @@ const RailFenceCipherTab = () => {
               <p className="text-muted-foreground">{steps[currentStep].description}</p>
             </div>
 
-            <div className="bg-muted p-8 rounded-lg mb-6">
+            <div className="bg-blue-50 p-8 rounded-lg mb-6">
             <div className="grid grid-cols-1 gap-2">
                 {steps[currentStep].visualization.map((row, rowIndex) => (
                   <div key={rowIndex} className="flex justify-center">
@@ -372,7 +372,7 @@ const RailFenceCipherTab = () => {
                       <div
                         key={colIndex}
                         className={`w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md font-mono text-lg
-                          ${char !== '.' && char !== '_' ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground'}`}
+                          ${char !== '.' && char !== '_' ? 'bg-primary text-primary-foreground' : 'bg-white text-foreground'}`}
                       >
                         {char}
                       </div>
@@ -383,12 +383,12 @@ const RailFenceCipherTab = () => {
             </div>
 
             {steps[currentStep].result && (
-              <div className="bg-muted p-4 rounded-md mb-6">
+              <div className="bg-blue-50 p-4 rounded-md mb-6">
                 <p className="font-mono">{steps[currentStep].result}</p>
               </div>
             )}
 
-            <div className="bg-muted p-4 rounded-md mb-6">
+            <div className="bg-blue-50 p-4 rounded-md mb-6">
               <p className="text-foreground font-mono">{steps[currentStep].detail}</p>
             </div>
 
@@ -404,7 +404,7 @@ const RailFenceCipherTab = () => {
             <div className="flex space-x-2">
               <Button
                 onClick={() => setIsPlaying(!isPlaying)}
-                variant="outline"
+                variant="default"
               >
                 {isPlaying ? (
                   <>
