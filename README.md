@@ -1,18 +1,15 @@
-# CryptoLearn Project Plan
+# CryptoLearn
 
 ## Team Name:  
 **Team ABC**
 
 ## Team Members:  
-- **Backend Developer:** Arenas, Aldrich Amiel A. [GitHub Profile](https://github.com/drchhhhhh)  
-- **Frontend Developer:** Briones, Sean Kyron Z. [GitHub Profile](https://github.com/Seankyron)  
-- **Project Manager/Fullstack Developer:** Cuarto, Mico Raphael F. [GitHub Profile](https://github.com/oocim)  
+- **Backend Developer:** [Arenas, Aldrich Amiel A.](https://github.com/drchhhhhh)  
+- **Frontend Developer:** [Briones, Sean Kyron Z. ](https://github.com/Seankyron)  
+- **Project Manager/Fullstack Developer:** [Cuarto, Mico Raphael F.](https://github.com/oocim)  
 
 ## Instructor:  
 **Ms. Fatima Marie P. Agdon, MSCS**
-
-## Project Title:  
-**CryptoLearn**
 
 ## Project Overview
 
@@ -73,36 +70,39 @@ Access the project repository here: [CryptoLearn GitHub Repository](https://gith
 
 ## Running the Website
 
-### Frontend:  
-- cmd 
-   cd REACT-FULLSTACK/client
-   npm install
-   npm run start-frontend
+### Frontend:
+Run the following commands to start the frontend:
 
-### Backend:  
-- cmd
-   cd REACT-FULLSTACK/server
-   npm install
-   node index.js
+```bash
+cd REACT-FULLSTACK/client
+npm install
+npm run start-frontend
+```
 
+Run the following commands to start the backend:
+```bash
+cd REACT-FULLSTACK/server
+npm install
+node index.js
+```
 Once both the frontend and backend servers are running, open the application in your browser to start exploring CryptoLearn.
 
-## Project Screenshots
+---
 
 ### Home Page
-![Home Page](images/1.png)
+![Home Page](./images/1.png)
 
 ### Cipher Library
-![Cipher Library](images/2.png)
+![Cipher Library](./images/2.png)
 
 ### Challenges
-![Challenges](images/3.png)
+![Challenges](./images/3.png)
 
 ### Log In
-![Log In](images/4.png)
+![Log In](./images/4.png)
 
 ### Sign Up
-![Sign Up](images/5.png)
+![Sign Up](./images/5.png)
 
 ### About Page
-![About Page](images/6.png)
+![About Page](./images/6.png)
