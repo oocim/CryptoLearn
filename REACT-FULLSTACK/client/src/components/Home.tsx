@@ -155,7 +155,7 @@ export default function Home() {
 
 
       {randomChallenge && (
-        <Card className="max-w-2xl mx-auto">
+        <Card className='hover:shadow-lg transition-shadow relative'>
           <CardHeader>
             <CardTitle><Flag className="inline-block mr-2 text-primary" size={24} /> Try This!</CardTitle>
             <CardDescription>Can you crack this cipher?</CardDescription>
@@ -188,7 +188,10 @@ export default function Home() {
                   onChange={(e) => setSolution(e.target.value)}
                   className="w-full"
                 />
-                <Button onClick={checkSolution} className="w-full">Check Solution</Button>
+                <Button onClick={checkSolution} className="flex mx-auto items-center justify-center">
+                  <CheckCircle className="mr-2" size={20} />
+                  Check Solution
+                </Button>
               </div>
               {feedback && (
                 <motion.p 
@@ -210,8 +213,8 @@ export default function Home() {
       )}
 
 <div>
-        <h2 className="text-3xl font-bold text-center mb-8 text-primary">Explore Classical Ciphers</h2>
-        <div className="relative max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-8">Explore Classical Ciphers</h2>
+        <div className="relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentCipherIndex}

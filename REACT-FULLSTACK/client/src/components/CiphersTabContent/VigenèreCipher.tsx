@@ -83,10 +83,20 @@ const VigenereCipherTab = () => {
             detail: `${operation}. ${explanation}`
         });
     }
+
+    // Final Step
+    steps.push({
+        title: "Final Result",
+        description: `Complete ${isEncrypting ? 'Encryption' : 'Decryption'}`,
+        text: normalizedText.split(''),
+        keyword: normalizedKey.split(''),
+        result: result,
+        currentIndex: -1,
+        detail: `The complete ${isEncrypting ? 'encrypted' : 'decrypted'} text is "${result.join('')}"`
+    });
   
     return steps;
-};
-
+  };
 
   const handleProcess = () => {
     const result = processVigenere(inputText, keyword, mode === 'encrypt')
@@ -246,7 +256,7 @@ const VigenereCipherTab = () => {
           </div>
 
           {output && (
-            <div className="bg-muted p-4 rounded-md">
+            <div className="bg-blue-50 p-4 rounded-md">
               <label className="block text-sm font-medium mb-2">
                 {mode === 'encrypt' ? 'Ciphertext:' : 'Plaintext:'}
               </label>
@@ -277,7 +287,7 @@ const VigenereCipherTab = () => {
               <p className="text-muted-foreground">{steps[currentStep].description}</p>
             </div>
 
-            <div className="bg-muted p-8 rounded-lg mb-6">
+            <div className="bg-blue-50 p-8 rounded-lg mb-6">
               <div className="space-y-6">
                 <div className="flex flex-col items-center">
                   <span className="text-sm font-medium mb-2">
@@ -288,7 +298,7 @@ const VigenereCipherTab = () => {
                       <div
                         key={`text-${i}`}
                         className={`w-10 h-10 flex items-center justify-center rounded-md font-mono text-lg
-                          ${i === steps[currentStep].currentIndex ? 'bg-primary text-primary-foreground font-bold' : 'bg-background'}`}
+                          ${i === steps[currentStep].currentIndex ? 'bg-primary text-primary-foreground font-bold' : 'bg-white'}`}
                       >
                         {char}
                       </div>
@@ -303,7 +313,7 @@ const VigenereCipherTab = () => {
                       <div
                         key={`key-${i}`}
                         className={`w-10 h-10 flex items-center justify-center rounded-md font-mono text-lg
-                          ${i === steps[currentStep].currentIndex ? 'bg-secondary text-secondary-foreground font-bold' : 'bg-background'}`}
+                          ${i === steps[currentStep].currentIndex ? 'bg-secondary text-secondary-foreground font-bold' : 'bg-white'}`}
                       >
                         {steps[currentStep].keyword[i % steps[currentStep].keyword.length]}
                       </div>
@@ -320,7 +330,7 @@ const VigenereCipherTab = () => {
                       <div
                         key={`result-${i}`}
                         className={`w-10 h-10 flex items-center justify-center rounded-md font-mono text-lg
-                          ${i === steps[currentStep].currentIndex ? 'bg-accent text-accent-foreground font-bold' : 'bg-background'}`}
+                          ${currentStep === steps.length - 1 || i === steps[currentStep].currentIndex ? 'bg-primary text-primary-foreground font-bold' : 'bg-white'}`}
                       >
                         {steps[currentStep].result[i] || ''}
                       </div>
@@ -330,7 +340,8 @@ const VigenereCipherTab = () => {
               </div>
             </div>
 
-            <div className="bg-muted p-4 rounded-md mb-6">
+
+            <div className="bg-blue-50 p-4 rounded-md mb-6">
               <p className="text-foreground font-mono">{steps[currentStep].detail}</p>
             </div>
 
@@ -346,7 +357,7 @@ const VigenereCipherTab = () => {
             <div className="flex space-x-2">
               <Button
                 onClick={() => setIsPlaying(!isPlaying)}
-                variant="outline"
+                variant="default"
               >
                 {isPlaying ? (
                   <>

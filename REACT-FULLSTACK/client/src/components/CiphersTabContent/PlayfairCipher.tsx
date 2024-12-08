@@ -71,16 +71,15 @@ const PlayfairCipherTab = () => {
     return null;
   };
 
-  // Encrypt text using Playfair cipher
   const playfairCipher = (text: string, key: string, isDecrypt: boolean = false): string => {
     const grid = generateGrid(key);
     setGrid(grid);
-
+  
     // Prepare text (convert to uppercase, replace J with I, remove non-letters)
     let cleanText = text.toUpperCase()
       .replace(/J/g, 'I')
       .replace(/[^A-Z]/g, '');
-
+  
     // Split into digraphs, pad if necessary
     let digraphs: string[] = [];
     for (let i = 0; i < cleanText.length; i += 2) {
@@ -93,7 +92,7 @@ const PlayfairCipherTab = () => {
       }
       digraphs.push(pair);
     }
-
+  
     // Encrypt or decrypt each digraph
     let result = '';
     let newSteps: Step[] = [{
@@ -104,13 +103,13 @@ const PlayfairCipherTab = () => {
       detail: "Generated Playfair grid from the key",
       highlightPair: ['', '']
     }];
-
+  
     for (let [index, digraph] of digraphs.entries()) {
       const [row1, col1] = findInGrid(grid, digraph[0])!;
       const [row2, col2] = findInGrid(grid, digraph[1])!;
-
+  
       let char1: string, char2: string;
-
+  
       if (row1 === row2) { // Same row
         char1 = grid[row1][(col1 + (isDecrypt ? 4 : 1)) % 5];
         char2 = grid[row2][(col2 + (isDecrypt ? 4 : 1)) % 5];
@@ -121,9 +120,9 @@ const PlayfairCipherTab = () => {
         char1 = grid[row1][col2];
         char2 = grid[row2][col1];
       }
-
+  
       result += char1 + char2;
-
+  
       newSteps.push({
         title: `Step ${index + 1}: Processing "${digraph}"`,
         description: `${isDecrypt ? 'Decrypting' : 'Encrypting'} digraph ${digraph} → ${char1}${char2}`,
@@ -137,7 +136,18 @@ const PlayfairCipherTab = () => {
         highlightPair: [digraph, char1 + char2]
       });
     }
-
+  
+    // Add final summary step
+    newSteps.push({
+      title: "Final Result",
+      description: `${isDecrypt ? 'Decryption' : 'Encryption'} Complete`,
+      visualization: grid,
+      result: result,
+      detail: `Successfully ${isDecrypt ? 'decrypted' : 'encrypted'} the entire message using the Playfair cipher. 
+      `,
+      highlightPair: ['', '']
+    });
+  
     setSteps(newSteps);
     return result;
   };
@@ -308,7 +318,7 @@ const PlayfairCipherTab = () => {
           </div>
 
           {output && (
-            <div className="bg-muted p-4 rounded-md">
+            <div className="bg-blue-50 p-4 rounded-md">
               <label className="block text-sm font-medium mb-2">Result:</label>
               <div className="font-mono break-all">{output}</div>
             </div>
@@ -354,7 +364,7 @@ const PlayfairCipherTab = () => {
               <p className="text-muted-foreground">{steps[currentStep].description}</p>
             </div>
 
-            <div className="bg-muted p-8 rounded-lg mb-6 flex-justify-center">
+            <div className="bg-blue-50 p-8 rounded-lg mb-6 flex-justify-center">
               <div className="grid grid-cols-5 gap-2 place-items-center">
                   {steps[currentStep].visualization.map((row, rowIndex) =>
                     row.map((cell, colIndex) => {
@@ -366,11 +376,11 @@ const PlayfairCipherTab = () => {
                       return (
                         <div
                           key={`${rowIndex}-${colIndex}`}
-                          className={`w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md font-mono text-lg
+                          className={`w-8 h-8 flex items-center justify-center  rounded-md font-mono text-lg
                             ${cell.startsWith('[') ? 'bg-primary text-primary-foreground' :
                             isHighlightInput ? 'bg-blue-200 text-blue-800' :
-                            isHighlightOutput ? 'bg-green-200 text-green-800' :
-                            'bg-background text-foreground'}`}
+                            isHighlightOutput ? 'bg-blue-100 text-blue-800' :
+                            'bg-white text-foreground'}`}
                         >
                           {cell.replace(/[\[\]]/g, '')}
                         </div>
@@ -382,23 +392,25 @@ const PlayfairCipherTab = () => {
 
             {steps[currentStep].highlightPair[0] && (
               <div className="flex justify-center items-center space-x-4 mb-6">
-                <div className="bg-blue-100 text-blue-800 p-2 rounded-md font-mono">
+                <div className="bg-primary text-primary-foreground p-2 rounded-md font-mono">
                   {steps[currentStep].highlightPair[0]}
                 </div>
                 <ArrowRight className="text-gray-500" />
-                <div className="bg-green-100 text-green-800 p-2 rounded-md font-mono">
+                <div className="bg-blue-100 text-blue-800 p-2 rounded-md font-mono">
                   {steps[currentStep].highlightPair[1]}
                 </div>
               </div>
             )}
 
-            {steps[currentStep].result && (
-              <div className="bg-muted p-4 rounded-md mb-6">
-                <p className="font-mono">Current result: {steps[currentStep].result}</p>
-              </div>
-            )}
+              {steps[currentStep].result && (
+                <div className="bg-blue-50 p-4 rounded-md mb-6">
+                  <p className="font-mono">
+                    {currentStep === steps.length - 1 ? "Final result" : "Current result"}: {steps[currentStep].result}
+                  </p>
+                </div>
+              )}
 
-            <div className="bg-muted p-4 rounded-md mb-6">
+            <div className="bg-blue-50 p-4 rounded-md mb-6">
               <p className="text-foreground font-mono">{steps[currentStep].detail}</p>
             </div>
 
@@ -414,7 +426,7 @@ const PlayfairCipherTab = () => {
             <div className="flex space-x-2">
               <Button
                 onClick={() => setIsPlaying(!isPlaying)}
-                variant="outline"
+                variant="default"
               >
                 {isPlaying ? (
                   <>

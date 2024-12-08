@@ -285,7 +285,7 @@ const CaesarCipherTab = () => {
           <div
             key={`text-${i}`}
             className={`w-8 h-8 flex items-center justify-center rounded-md font-mono text-lg
-              ${i === steps[currentStep].currentIndex ? 'bg-primary text-primary-foreground font-bold' : 'bg-background'}`}
+              ${i === steps[currentStep].currentIndex ? 'bg-primary text-primary-foreground font-bold' : 'bg-white'}`}
           >
             {char}
           </div>
@@ -322,7 +322,7 @@ const CaesarCipherTab = () => {
             <div className="flex space-x-2">
               <Button
                 onClick={() => setIsPlaying(!isPlaying)}
-                variant="outline"
+                variant="default"
               >
                 {isPlaying ? (
                   <>
