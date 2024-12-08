@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Lock, BookOpenCheck, Flag, KeyRound, Grid, Shuffle, Fingerprint, History, ArrowRight, CheckCircle, XCircle } from 'lucide-react'
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
@@ -11,10 +11,30 @@ export default function Home() {
   const [solution, setSolution] = useState('')
   const [showHint, setShowHint] = useState(false)
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
+  const [randomChallenge, setRandomChallenge] = useState(null)
+
+  useEffect(() => {
+    const fetchRandomChallenge = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/challenges/random')
+        if (!response.ok) {
+          throw new Error('Failed to fetch challenge')
+        }
+        const challenge = await response.json()
+        setRandomChallenge(challenge)
+      } catch (error) {
+        console.error('Error fetching challenge:', error)
+      }
+    }
+
+    fetchRandomChallenge()
+  }, [])
 
   const checkSolution = () => {
-    const correct = solution.toLowerCase() === 'welcome to cryptolearn'
-    setFeedback(correct ? 'correct' : 'incorrect')
+    if (randomChallenge) {
+      const correct = solution.toLowerCase() === randomChallenge.plaintext.toLowerCase()
+      setFeedback(correct ? 'correct' : 'incorrect')
+    }
   }
 
   const featuredCiphers = [
@@ -91,46 +111,54 @@ export default function Home() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle><Flag className="inline-block mr-2" /> Try This!</CardTitle>
-          <CardDescription>Can you crack this Caesar cipher?</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="font-mono text-lg mb-4 p-4 bg-muted rounded-md">ZHOFRPH WR FUBSWROHDUQ</p>
-          <Button variant="link" onClick={() => setShowHint(!showHint)} className="mb-4">
-            {showHint ? 'Hide Hint' : 'Show Hint'}
-          </Button>
-          {showHint && (
-            <p className="text-sm text-muted-foreground mb-4">
-              Each letter in the message has been shifted 3 positions forward in the alphabet. To decode, shift each letter 3 positions backward.
-            </p>
+      {/* Display the "Try This!" Challenge */}
+{randomChallenge && (
+  <Card>
+    <CardHeader>
+      <CardTitle><Flag className="inline-block mr-2" /> Try This!</CardTitle>
+      <CardDescription>Can you crack this cipher?</CardDescription>
+      {/* Display the cipher type */}
+      <p className="text-sm text-muted-foreground mt-2">
+        Cipher Type: <strong>{randomChallenge.cipherType}</strong>
+      </p>
+    </CardHeader>
+    <CardContent>
+      <p className="font-mono text-lg mb-4 p-4 bg-muted rounded-md">{randomChallenge.ciphertext}</p>
+      <Button variant="link" onClick={() => setShowHint(!showHint)} className="mb-4">
+        {showHint ? 'Hide Hint' : 'Show Hint'}
+      </Button>
+      {showHint && (
+        <p className="text-sm text-muted-foreground mb-4">
+          {randomChallenge.hint}
+        </p>
+      )}
+      <div className="space-y-2">
+        <Input
+          type="text"
+          placeholder="Type your answer here"
+          value={solution}
+          onChange={(e) => setSolution(e.target.value)}
+        />
+        <Button onClick={checkSolution}>Check Solution</Button>
+      </div>
+      {feedback && (
+        <motion.p 
+          className={`mt-4 ${feedback === 'correct' ? 'text-green-600' : 'text-red-600'}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          {feedback === 'correct' ? (
+            <><CheckCircle className="inline-block mr-2" /> Correct! Well done!</>
+          ) : (
+            <><XCircle className="inline-block mr-2" /> Not quite. Try again!</>
           )}
-          <div className="space-y-2">
-            <Input
-              type="text"
-              placeholder="Type your answer here"
-              value={solution}
-              onChange={(e) => setSolution(e.target.value)}
-            />
-            <Button onClick={checkSolution}>Check Solution</Button>
-          </div>
-          {feedback && (
-            <motion.p 
-              className={`mt-4 ${feedback === 'correct' ? 'text-green-600' : 'text-red-600'}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              {feedback === 'correct' ? (
-                <><CheckCircle className="inline-block mr-2" /> Correct! Well done!</>
-              ) : (
-                <><XCircle className="inline-block mr-2" /> Not quite. Try again!</>
-              )}
-            </motion.p>
-          )}
-        </CardContent>
-      </Card>
+        </motion.p>
+      )}
+    </CardContent>
+  </Card>
+)}
+
 
       <div>
         <h2 className="text-3xl font-bold text-center mb-6">Featured Ciphers</h2>

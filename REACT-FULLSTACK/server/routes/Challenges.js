@@ -88,4 +88,22 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/random", async (req, res) => {
+  try {
+    const count = await Challenge.countDocuments();
+    if (count === 0) {
+      return res.status(404).json({ error: "No challenges found." });
+    }
+
+    const randomIndex = Math.floor(Math.random() * count);
+    const randomChallenge = await Challenge.findOne().skip(randomIndex);
+
+    res.json(randomChallenge);
+  } catch (error) {
+    console.error("Error fetching random challenge:", error);
+    res.status(500).json({ error: "An error occurred while fetching the random challenge" });
+  }
+});
+
+
 module.exports = router;

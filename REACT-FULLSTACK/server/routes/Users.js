@@ -152,11 +152,11 @@ router.post("/login", async (req, res) => {
 
 // Add points to a user and track solved challenges
 router.post("/add-points", async (req, res) => {
-    const { userId, pointsEarned, challengeId } = req.body;
+    const { userId, pointsEarned } = req.body;
 
     // Validate input data
-    if (!userId || !pointsEarned || !challengeId) {
-        return res.status(400).json({ error: "User ID, points, and challenge ID are required" });
+    if (!userId || !pointsEarned) {
+        return res.status(400).json({ error: "User ID and points are required" });
     }
 
     try {
@@ -166,19 +166,11 @@ router.post("/add-points", async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        // Check if the challenge is already completed
-        if (user.completedChallenges.includes(challengeId)) {
-            return res.status(400).json({ error: "Challenge already completed" });
-        }
-
         // Add points to the user's total points
         user.points += pointsEarned;
 
-        // Increment the total number of solved challenges
+        // Increment the total number of solved challenges (optional)
         user.solvedChallenges += 1;
-
-        // Add the challengeId to the completedChallenges array
-        user.completedChallenges.push(challengeId);
 
         // Save the updated user data
         await user.save();
@@ -189,6 +181,7 @@ router.post("/add-points", async (req, res) => {
         res.status(500).json({ error: "An error occurred while adding points" });
     }
 });
+
 
 
 // Get user details by username with total solved challenges

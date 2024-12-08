@@ -77,7 +77,6 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
     if (correct) {
       console.log(challenge.plaintext)
       // Update the UserChallengeProgress
-      updateUserProgress(currentUserId, challenge.challengeId, true)
     }
     onSubmit(userAnswer, challenge.challengeId)
     setUserAnswer('')
@@ -241,32 +240,9 @@ export default function Challenges() {
   }, [activeChallengeId, challenges])
 
   const handleSubmit = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/users/add-points", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: localStorage.userId,
-          pointsEarned: activeChallenge.points,
-          challengeId: activeChallenge.challengeId,
-        }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to submit answer');
-      }
-  
-      console.log('Points added successfully');
-      const result = await response.json();
-      console.log('Server Response:', result);
-  
-      // You may add any further state updates or feedback here if needed
-    } catch (error) {
-      console.error('Error submitting answer:', error);
-    }
+    updateUserProgress();
   };
+  
 
   const handleSignUp = (username: string, password: string) => {
     // Implement sign up logic here
@@ -350,25 +326,38 @@ export default function Challenges() {
     )
   }
 
-  const updateUserProgress = async (userId: number, challengeId: number, solved: boolean) => {
-    try {
-      const response = await fetch("http://localhost:3000/updateprogress", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId, challengeId, solved }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to update user progress');
-      }
-  
-      console.log('User progress updated successfully');
-      // You might want to update your local state here as well
-    } catch (error) {
-      console.error('Error updating user progress:', error);
+  const updateUserProgress = async () => {
+    console.log('User ID:', localStorage.userId);
+    const userId = localStorage.getItem('userId');
+  if (!userId) {
+    console.error('User ID not found in localStorage');
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:3000/users/add-points", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: userId,
+        pointsEarned: 100,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to submit answer');
     }
+
+    console.log('Points added successfully');
+    const result = await response.json();
+    console.log('Server Response:', result);
+
+    // You can update any other state or trigger additional logic after the response, if needed
+  } catch (error) {
+    console.error('Error submitting answer:', error);
+  }
   };
 
   return (
