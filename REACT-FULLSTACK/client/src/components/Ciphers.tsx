@@ -37,7 +37,7 @@ export default function Ciphers() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-center">Cipher Library</h1>
+      <h1 className="text-3xl font-bold text-center text-primary">Cipher Library</h1>
       <p className="text-xl text-center text-muted-foreground">Explore our collection of classical ciphers and learn how they work.</p>
       
       <Tabs defaultValue="caesar-cipher">

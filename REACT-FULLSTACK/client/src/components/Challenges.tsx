@@ -363,7 +363,7 @@ export default function Challenges() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Cryptography Challenges</h1>
+        <h1 className="text-3xl font-bold text-primary">Cryptography Challenges</h1>
         <div>
           <Button variant="outline" onClick={() => setShowLeaderboard(!showLeaderboard)} className="mr-2">
             {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
