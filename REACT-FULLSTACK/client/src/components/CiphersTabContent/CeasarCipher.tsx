@@ -80,9 +80,19 @@ const CaesarCipherTab = () => {
         detail: `${operation} (${char} is at position ${charIndex + 1}, which maps to ${newChar} at position ${isEncrypting ? (charIndex + shift) % 26 + 1 : (charIndex - shift + 26) % 26 + 1})`
       })
     }
+    steps.push({
+      title: "Final Result",
+      description: `${isEncrypting ? 'Encrypted' : 'Decrypted'} text: "${result.join('')}"`,
+      text: normalizedText.split(''),
+      result: result,
+      currentIndex: normalizedText.length,
+      detail: `The ${isEncrypting ? 'encryption' : 'decryption'} process is complete.`
+    })
   
     return steps
   }
+
+  
 
   const handleOperation = () => {
     const result = caesarCipher(inputText, shift, mode === 'decrypt')
@@ -240,7 +250,7 @@ const CaesarCipherTab = () => {
           </div>
 
           {output && (
-            <div className="bg-muted p-4 rounded-md">
+            <div className="bg-blue-50 p-4 rounded-md">
               <label className="block text-sm font-medium mb-2">Result:</label>
               <div className="font-mono break-all">{output}</div>
             </div>
@@ -268,7 +278,7 @@ const CaesarCipherTab = () => {
     <p className="text-muted-foreground">{steps[currentStep].description}</p>
   </div>
 
-  <div className="bg-muted p-8 rounded-lg mb-6">
+  <div className="bg-blue-50 p-8 rounded-lg mb-6">
     <div className="flex flex-col space-y-4">
       <div className="flex justify-center space-x-2">
         {steps[currentStep].text.map((char: string, i: number) => (
@@ -286,7 +296,8 @@ const CaesarCipherTab = () => {
           <div
             key={`result-${i}`}
             className={`w-8 h-8 flex items-center justify-center rounded-md font-mono text-lg
-              ${i === steps[currentStep].currentIndex ? 'bg-accent text-accent-foreground font-bold' : 'bg-background'}`}
+              ${i === steps[currentStep].currentIndex ? 'bg-accent text-accent-foreground font-bold' : 'bg-background'}
+              ${currentStep === steps.length - 1 ? 'bg-primary text-primary-foreground' : ''}`}
           >
             {char || ''}
           </div>
@@ -295,7 +306,7 @@ const CaesarCipherTab = () => {
     </div>
   </div>
 
-  <div className="bg-muted p-4 rounded-md mb-6">
+  <div className="bg-blue-50 p-4 rounded-md mb-6">
     <p className="text-foreground font-mono">{steps[currentStep].detail}</p>
   </div>
 
@@ -369,8 +380,8 @@ const CaesarCipherTab = () => {
         <h3 className="font-semibold mb-2">Security Level: Basic</h3>
         <div className="flex items-center mb-4">
           <div className="h-2 w-24 bg-destructive rounded-full" />
-          <div className="h-2 w-24 bg-muted rounded-full ml-1" />
-          <div className="h-2 w-24 bg-muted rounded-full ml-1" />
+          <div className="h-2 w-24 bg-blue-50 rounded-full ml-1" />
+          <div className="h-2 w-24 bg-blue-50 rounded-full ml-1" />
         </div>
         <p className="text-sm text-muted-foreground">
           The Caesar cipher is easily broken and should only be used for 
@@ -385,3 +396,4 @@ const CaesarCipherTab = () => {
 }
 
 export default CaesarCipherTab
+
