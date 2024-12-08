@@ -90,19 +90,19 @@ Once both the frontend and backend servers are running, open the application in 
 ---
 
 ### Home Page
-![Home Page](./images/1.png)
+![Home Page](./images/1.PNG)
 
 ### Cipher Library
-![Cipher Library](./images/2.png)
+![Cipher Library](./images/2.PNG)
 
 ### Challenges
-![Challenges](./images/3.png)
+![Challenges](./images/3.PNG)
 
 ### Log In
-![Log In](./images/4.png)
+![Log In](./images/4.PNG)
 
 ### Sign Up
-![Sign Up](./images/5.png)
+![Sign Up](./images/5.PNG)
 
 ### About Page
-![About Page](./images/6.png)
+![About Page](./images/6.PNG)
