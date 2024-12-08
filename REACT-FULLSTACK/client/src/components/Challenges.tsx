@@ -455,24 +455,10 @@ export default function Challenges() {
               </div>
             </div>
             <div className="bg-muted p-4 rounded-md">
-              <div className="text-sm text-muted-foreground">Success Rate</div>
-              <div className="text-2xl font-semibold flex items-center mt-1">
-                <Star className="h-5 w-5 text-yellow-500 mr-2" />
-                75%
-              </div>
-            </div>
-            <div className="bg-muted p-4 rounded-md">
               <div className="text-sm text-muted-foreground">Total Points</div>
               <div className="text-2xl font-semibold flex items-center mt-1">
                 <Trophy className="h-5 w-5 text-blue-500 mr-2" />
                 {userPoints}
-              </div>
-            </div>
-            <div className="bg-muted p-4 rounded-md">
-              <div className="text-sm text-muted-foreground">Current Streak</div>
-              <div className="text-2xl font-semibold flex items-center mt-1">
-                <Award className="h-5 w-5 text-purple-500 mr-2" />
-                5 days
               </div>
             </div>
           </div>
