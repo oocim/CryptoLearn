@@ -8,12 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 
 export default function About() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-6">About CryptoLearn</h1>
-      
+    <div className="container mx-auto px-4 py-8">      
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle className="text-2xl">Our Mission</CardTitle>
+          <CardTitle className="text-2xl text-primary">About CryptoLearn</CardTitle>
           <CardDescription>Empowering the world through cryptography education</CardDescription>
         </CardHeader>
         <CardContent>
@@ -30,7 +28,7 @@ export default function About() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <BookOpen className="mr-2" />
+              <BookOpen className="mr-2 text-primary" />
               Learn
             </CardTitle>
           </CardHeader>
@@ -41,7 +39,7 @@ export default function About() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Lock className="mr-2" />
+              <Lock className="mr-2 text-primary" />
               Practice
             </CardTitle>
           </CardHeader>
@@ -52,7 +50,7 @@ export default function About() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Shield className="mr-2" />
+              <Shield className="mr-2 text-primary" />
               Challenge
             </CardTitle>
           </CardHeader>
@@ -63,7 +61,7 @@ export default function About() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Shield className="mr-2" />
+              <Shield className="mr-2 text-primary" />
               Challenge
             </CardTitle>
           </CardHeader>
@@ -73,7 +71,7 @@ export default function About() {
         </Card>
       </div>
 
-      <h2 className="text-3xl font-semibold mb-4">Cryptography FAQ</h2>
+      <h2 className="text-3xl font-semibold mb-4 text-primary">Cryptography FAQ</h2>
       <Accordion type="single" collapsible className="mb-8">
         <AccordionItem value="item-1">
           <AccordionTrigger>What is cryptography?</AccordionTrigger>
@@ -109,7 +107,7 @@ export default function About() {
       <Card className="mb-8">
   <CardHeader>
     <CardTitle className="flex items-center">
-      <History className="mr-2" />
+      <History className="mr-2 text-primary" />
       A Brief History of Cryptography
     </CardTitle>
   </CardHeader>
@@ -182,7 +180,7 @@ export default function About() {
 </Card>
 
 
-      <h2 className="text-3xl font-semibold mb-4">Meet the Developers</h2>
+      <h2 className="text-3xl font-semibold mb-4 text-primary">Meet the Developers</h2>
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader>

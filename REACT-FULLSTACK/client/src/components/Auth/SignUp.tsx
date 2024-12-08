@@ -58,7 +58,7 @@ const SignUp = ({ onSignUp }: { onSignUp: (username: string, email: string, pass
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle className="flex items-center">
-          <UserPlus className="mr-2" />
+          <UserPlus className="mr-2text-primary" />
           Sign Up
         </CardTitle>
         <CardDescription>Create an account to start solving challenges</CardDescription>

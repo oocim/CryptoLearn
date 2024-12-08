@@ -153,7 +153,7 @@ const VigenereCipherTab = () => {
                   </div>
                 </div>
 
-                <div className="bg-green-50 p-4 rounded-md">
+                <div className="bg-blue-50 p-4 rounded-md">
                   <h3 className="font-semibold mb-2">Decryption:</h3>
                   <p>Each letter in the ciphertext is shifted backward using the same keyword pattern.</p>
                   <div className="font-mono mt-2">

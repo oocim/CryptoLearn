@@ -109,37 +109,40 @@ export default function Home() {
 
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle>
-              <Lock className="inline-block mr-2 text-primary" size={24} /> Start Learning
-            </CardTitle>
-            <CardDescription>
-              Begin your cryptography journey with our interactive tools and comprehensive lessons.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Link to="/ciphers">
-              <Button variant="outline" className="group">
-                Explore Ciphers <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-          </CardFooter>
+            <CardHeader>
+                <CardTitle>
+                    <Lock className="inline-block mr-2 text-primary" size={24} /> Start Learning
+                </CardTitle>
+                <CardDescription>
+                    Begin your cryptography journey with our interactive tools and comprehensive lessons.
+                </CardDescription>
+            </CardHeader>
+            <CardFooter>
+                <Link to="/ciphers">
+                    <Button variant="default" className="group">
+                        Explore Ciphers <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                </Link>
+            </CardFooter>
         </Card>
-        
+
         <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle><BookOpenCheck className="inline-block mr-2 text-primary" size={24} /> Practice</CardTitle>
-            <CardDescription>Test your knowledge with interactive exercises and hands-on encryption practice.</CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Link to="/challenges">
-              <Button variant="outline" className="group">
-                Start Practicing <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-          </CardFooter>
+            <CardHeader>
+                <CardTitle>
+                    <BookOpenCheck className="inline-block mr-2 text-primary" size={24} /> Practice
+                </CardTitle>
+                <CardDescription>Test your knowledge with interactive exercises and hands-on encryption practice.</CardDescription>
+            </CardHeader>
+            <CardFooter>
+                <Link to="/challenges">
+                    <Button variant="default" className="group">
+                        Start Practicing <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                </Link>
+            </CardFooter>
         </Card>
-      </div>
+    </div>
+
 
       {randomChallenge && (
         <Card className="max-w-2xl mx-auto">
@@ -228,7 +231,7 @@ export default function Home() {
                     </CardTitle>
                     <div className="flex space-x-2">
                       <Button
-                        variant="outline"
+                        variant="default"
                         size="icon"
                         onClick={prevCipher}
                         className="h-8 w-8"
@@ -236,7 +239,7 @@ export default function Home() {
                         <ChevronLeft className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="outline"
+                        variant="default"
                         size="icon"
                         onClick={nextCipher}
                         className="h-8 w-8"

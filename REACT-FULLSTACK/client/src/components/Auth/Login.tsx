@@ -18,7 +18,7 @@ const Login = ({ onLogin }: { onLogin: (username: string, password: string) => v
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle className="flex items-center">
-          <LogIn className="mr-2" />
+          <LogIn className="mr-2 text-primary" />
           Log In
         </CardTitle>
         <CardDescription>Log in to access challenges</CardDescription>
