@@ -206,7 +206,7 @@ const PlayfairCipherTab = () => {
             <div className="bg-blue-50 p-4 rounded-md">
               <h3 className="font-semibold mb-2">Example:</h3>
               <p className="mb-2">Key: MONARCHY, Plaintext: HELLO WORLD</p>
-              <div className="grid grid-cols-5 gap-1 mb-4">
+              <div className="grid grid-cols-5 gap-1 mb-4 place-items-center">
                 {['M','O','N','A','R','C','H','Y','B','D','E','F','G','I/J','K','L','P','Q','S','T','U','V','W','X','Z'].map((char, i) => (
                   <div key={i} className="w-8 h-8 bg-white rounded flex items-center justify-center font-mono">
                     {char}
@@ -317,8 +317,8 @@ const PlayfairCipherTab = () => {
           {grid.length > 0 && (
             <div className="mt-4">
               <label className="block text-sm font-medium mb-2">Playfair Grid:</label>
-              <div className="bg-blue-50 p-4 rounded-md">
-                <div className="grid grid-cols-5 gap-1">
+              <div className="bg-blue-50 p-4 rounded-md flex-justify-center">
+                <div className="grid grid-cols-5 gap-1 place-items-center">
                   {grid.flat().map((char, i) => (
                     <div 
                       key={i}
@@ -354,8 +354,8 @@ const PlayfairCipherTab = () => {
               <p className="text-muted-foreground">{steps[currentStep].description}</p>
             </div>
 
-            <div className="bg-muted p-8 rounded-lg mb-6">
-              <div className="grid grid-cols-5 gap-2">
+            <div className="bg-muted p-8 rounded-lg mb-6 flex-justify-center">
+              <div className="grid grid-cols-5 gap-2 place-items-center">
                   {steps[currentStep].visualization.map((row, rowIndex) =>
                     row.map((cell, colIndex) => {
                       const isHighlightInput = cell.replace(/[\[\]]/g, '') === steps[currentStep].highlightPair[0][0] ||
