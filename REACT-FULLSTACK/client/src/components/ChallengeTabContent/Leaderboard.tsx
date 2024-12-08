@@ -15,7 +15,7 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:3000/users/')
+        const response = await fetch('http://localhost:3000/users/leaderboards')
         if (!response.ok) {
           throw new Error('Failed to fetch users')
         }

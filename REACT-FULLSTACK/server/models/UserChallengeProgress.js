@@ -7,8 +7,18 @@ const userChallengeProgressSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    username: {
+      type: String,
+      ref: "User",
+      required: true,
+    },
     challengeId: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "Challenge",
+      required: true,
+    },
+    category: {
+      type: String,
       ref: "Challenge",
       required: true,
     },

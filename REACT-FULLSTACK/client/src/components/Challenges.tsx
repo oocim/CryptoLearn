@@ -12,7 +12,7 @@ import Login from './Auth/Login'
 import Leaderboard from './ChallengeTabContent/Leaderboard'
 
 export interface Challenge {
-  challengeId: number
+  _id: string
   title: string
   description: string
   ciphertext: string
@@ -27,8 +27,8 @@ export interface Challenge {
 
 export interface UserChallengeProgress {
   progressId: number
-  userId: number
-  challengeId: number
+  username: string
+  challengeId: string
   solved: boolean
 }
 
@@ -36,6 +36,14 @@ interface LeaderboardEntry {
   rank: number
   username: string
   score: number
+  points: number
+  solvedChallenges: number
+}
+
+interface LocalStorageUser {
+  username: string
+  solvedChallenges: number
+  userPoints: number
 }
 
 interface ChallengeCardProps {
@@ -43,8 +51,8 @@ interface ChallengeCardProps {
   userChallengeProgress: UserChallengeProgress
   isActive: boolean
   onActivate: () => void
-  onSubmit: (answer: string, challengeId: number) => void
-  updateUserProgress: (progressId: number, challengeId: number, solved: boolean) => void
+  onSubmit: (answer: string, challengeId: string) => void
+  updateUserProgress: (username: string, challengeId: string, solved: boolean) => void
 }
 
 export const ChallengeCard: React.FC<ChallengeCardProps> = ({ 
@@ -59,7 +67,14 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
   const [userAnswer, setUserAnswer] = useState('')
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
   const [isSubmitted, setIsSubmitted] = useState(userChallengeProgress.solved)
-  const [currentUserId, setCurrentUserId] = useState(3) //babaguhin if may login na
+  const [currentUsername, setCurrentUsername] = useState('')
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username')
+    if (storedUsername) {
+      setCurrentUsername(storedUsername)
+    }
+  }, [])
 
   useEffect(() => {
     if (!isActive && !isSubmitted) {
@@ -75,10 +90,9 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
     setIsCorrect(correct)
     setIsSubmitted(correct)
     if (correct) {
-      console.log(challenge.plaintext)
-      // Update the UserChallengeProgress
+      updateUserProgress(currentUsername, challenge._id, true)
     }
-    onSubmit(userAnswer, challenge.challengeId)
+    onSubmit(userAnswer, challenge._id)
     setUserAnswer('')
   }
 
@@ -117,10 +131,6 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
         {isActive && (
           <div className="space-y-4">
             <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <div className="flex items-center">
-                <Timer className="h-4 w-4 mr-1" />
-                Time Limit: {challenge.timeLimit}
-              </div>
               <Button
                 variant="ghost"
                 size="sm"
@@ -190,65 +200,158 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
 }
 
 export default function Challenges() {
-  const [activeChallengeId, setActiveChallengeId] = useState<number | null>(null)
+  const [activeChallengeId, setActiveChallengeId] = useState<string | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [showSignUp, setShowSignUp] = useState(false)
   const [showLeaderboard, setShowLeaderboard] = useState(false)
   const [userPoints, setUserPoints] = useState(0)
   const [challenges, setChallenges] = useState<Challenge[]>([])
   const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null)
-  const [currentUserId, setCurrentUserId] = useState(3) //babaguhin if may login na
+  const [currentUsername, setCurrentUsername] = useState('')
   const [leaderboardEntries, setLeaderboardEntries] = useState<LeaderboardEntry[]>([])
+  const [solvedChallengesCount, setSolvedChallengesCount] = useState(0)
 
+  // Utility function to manage localStorage
+  const updateLocalStorage = (user: LocalStorageUser) => {
+    localStorage.setItem('username', user.username)
+    localStorage.setItem('totalSolvedChallenges', user.solvedChallenges.toString())
+    localStorage.setItem('userPoints', user.userPoints.toString())
+  }
+
+  // Retrieve user data from localStorage on component mount
   useEffect(() => {
-    const storedUserId = localStorage.getItem('userId')
+    const storedUsername = localStorage.getItem('username')
     const storedUserPoints = localStorage.getItem('userPoints')
     const storedSolvedChallenges = localStorage.getItem('totalSolvedChallenges')
 
-    if (storedUserId && storedUserPoints && storedSolvedChallenges) {
+    if (storedUsername && storedUserPoints && storedSolvedChallenges) {
       setIsLoggedIn(true)
-      setCurrentUserId(Number(storedUserId))
+      setCurrentUsername(storedUsername)
       setUserPoints(Number(storedUserPoints))
+      setSolvedChallengesCount(Number(storedSolvedChallenges))
     }
   }, [])
 
+  // Fetch and update leaderboard data
   const fetchLeaderboardData = useCallback(async () => {
     try {
-        const response = await fetch('http://localhost:3000/user/leaderboards');
-        if (!response.ok) {
-            throw new Error('Failed to fetch leaderboard data');
+      const response = await fetch('http://localhost:3000/users/leaderboards')
+      if (!response.ok) {
+        throw new Error('Failed to fetch leaderboard data')
+      }
+      const data: LeaderboardEntry[] = await response.json()
+
+      setLeaderboardEntries(data)
+      const userEntry = data.find(entry => entry.username === currentUsername)
+
+      if (userEntry) {
+        const updatedUser: LocalStorageUser = {
+          username: currentUsername,
+          solvedChallenges: userEntry.solvedChallenges || 0,
+          userPoints: userEntry.points || 0
         }
-        const data: LeaderboardEntry[] = await response.json();
 
-        // Sort the filtered data by rank in ascending order
-        const sortedData = data.sort((a, b) => a.rank - b.rank);
-
-        // Update state with the sorted and filtered data
-        setLeaderboardEntries(sortedData);
+        updateLocalStorage(updatedUser)
+        setSolvedChallengesCount(updatedUser.solvedChallenges)
+        setUserPoints(updatedUser.userPoints)
+      }
     } catch (error) {
-        console.error('Error fetching leaderboard data:', error);
+      console.error('Error fetching leaderboard data:', error)
     }
-}, []);
+  }, [currentUsername])
 
+  // Periodic leaderboard data fetch
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchLeaderboardData() // Initial fetch
+
+      // Set up polling interval
+      const intervalId = setInterval(fetchLeaderboardData, 5000) // Fetch every 5 seconds
+
+      // Clean up interval on component unmount
+      return () => clearInterval(intervalId)
+    }
+  }, [fetchLeaderboardData, isLoggedIn])
+
+  // Update active challenge when challenge ID changes
   useEffect(() => {
     if (activeChallengeId !== null) {
-      const challenge = challenges.find(c => c.challengeId === activeChallengeId)
+      const challenge = challenges.find(c => c._id === activeChallengeId)
       setActiveChallenge(challenge || null)
     } else {
       setActiveChallenge(null)
     }
   }, [activeChallengeId, challenges])
 
-  const handleSubmit = async () => {
-    updateUserProgress();
-  };
-  
+  // Handle challenge submission
+  const handleSubmit = async (answer: string) => {
+    if (activeChallenge) {
+      const updatedChallenges = challenges.map(c => 
+        c._id === activeChallenge._id ? { ...c, completed: true } : c
+      )
+      setChallenges(updatedChallenges)
 
-  const handleSignUp = (username: string, password: string) => {
-    // Implement sign up logic here
-    console.log('Sign up:', username, password)
-    setIsLoggedIn(true)
-    setShowSignUp(false)
+      const isCorrect = answer.trim().toLowerCase() === activeChallenge.plaintext.trim().toLowerCase()
+
+      if (isCorrect) {
+        const newPoints = userPoints + activeChallenge.points
+        setUserPoints(newPoints)
+
+        try {
+          const response = await fetch("http://localhost:3000/user-progress/submit-answer", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              username: currentUsername,
+              challengeId: activeChallenge._id,
+              solved: true
+            }),
+          })
+
+          if (!response.ok) {
+            throw new Error('Failed to update points')
+          }
+
+          await fetchLeaderboardData()
+        } catch (error) {
+          console.error('Error updating points:', error)
+        }
+      }
+    }
+  }
+
+  // Authentication handlers
+  const handleSignUp = async (username: string, password: string) => {
+    try {
+      const response = await fetch("http://localhost:3000/users/signup", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Signup failed')
+      }
+
+      const userData = await response.json()
+      
+      const userStorageData: LocalStorageUser = {
+        username,
+        solvedChallenges: 0,
+        userPoints: 0
+      }
+
+      updateLocalStorage(userStorageData)
+      setCurrentUsername(username)
+      setIsLoggedIn(true)
+      setShowSignUp(false)
+    } catch (error) {
+      console.error('Signup error:', error)
+    }
   }
 
   const handleLogin = async (username: string, password: string) => {
@@ -259,54 +362,75 @@ export default function Challenges() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
-      });
-  
+      })
+
       if (!response.ok) {
-        throw new Error('Failed to login');
+        throw new Error('Login failed')
       }
-  
-      // Assuming the response contains a token or user data
-      const data = await response.json();
-      
-      // Fetch the user-specific data from the API
-      const userInfoResponse = await fetch(`http://localhost:3000/users/user-info/${username}`);
+
+      const userInfoResponse = await fetch(`http://localhost:3000/users/user-info/${username}`)
       
       if (!userInfoResponse.ok) {
-        throw new Error('Failed to fetch user info');
+        throw new Error('Failed to fetch user info')
       }
-  
-      const userInfo = await userInfoResponse.json();
-      
-      // Store the user info and login state in localStorage
-      localStorage.setItem('userId', data.userId);
-      localStorage.setItem('totalSolvedChallenges', userInfo.totalSolvedChallenges);
-      localStorage.setItem('userPoints', userInfo.points);
-      
-      // Update state
-      setCurrentUserId(data.userId);
-      setUserPoints(userInfo.points);
-      setIsLoggedIn(true);
-  
-      console.log('Login successful');
-      console.log(localStorage.userId);
-      console.log(localStorage.totalSolvedChallenges);
-      console.log(localStorage.points);
-    } catch (error) {
-      console.error('Error during login:', error);
-    }
-  };
-  
-  
 
-  const handleLogout = () => {
-    localStorage.removeItem('userId')
-    localStorage.removeItem('totalSolvedChallenges')
-    localStorage.removeItem('userPoints')
-    setIsLoggedIn(false)
-    setCurrentUserId(null)
-    setUserPoints(0)
+      const userInfo = await userInfoResponse.json()
+    
+      const userStorageData: LocalStorageUser = {
+        username,
+        solvedChallenges: userInfo.solvedChallenges || 0,
+        userPoints: userInfo.points || 0
+      }
+
+      updateLocalStorage(userStorageData)
+      setCurrentUsername(username)
+      setUserPoints(userInfo.points || 0)
+      setSolvedChallengesCount(userInfo.solvedChallenges || 0)
+      setIsLoggedIn(true)
+    } catch (error) {
+      console.error('Login error:', error)
+    }
   }
 
+  const handleLogout = () => {
+    // Clear all relevant localStorage items
+    ['username', 'totalSolvedChallenges', 'userPoints'].forEach(key => 
+      localStorage.removeItem(key)
+    )
+
+    setIsLoggedIn(false)
+    setCurrentUsername('')
+    setUserPoints(0)
+    setSolvedChallengesCount(0)
+  }
+
+  // Update user progress
+  const updateUserProgress = async (username: string, challengeId: string, solved: boolean) => {
+    if (!username) {
+      console.error('Username not found')
+      return
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/user-progress/submit-answer", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, challengeId, solved }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to submit answer')
+      }
+
+      await fetchLeaderboardData()
+    } catch (error) {
+      console.error('Error submitting answer:', error)
+    }
+  }
+
+  // Render login/signup if not logged in
   if (!isLoggedIn) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -326,40 +450,6 @@ export default function Challenges() {
     )
   }
 
-  const updateUserProgress = async () => {
-    console.log('User ID:', localStorage.userId);
-    const userId = localStorage.getItem('userId');
-  if (!userId) {
-    console.error('User ID not found in localStorage');
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:3000/users/add-points", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: userId,
-        pointsEarned: 100,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to submit answer');
-    }
-
-    console.log('Points added successfully');
-    const result = await response.json();
-    console.log('Server Response:', result);
-
-    // You can update any other state or trigger additional logic after the response, if needed
-  } catch (error) {
-    console.error('Error submitting answer:', error);
-  }
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -374,14 +464,14 @@ export default function Challenges() {
       <p className="text-xl text-muted-foreground">Test your skills and level up your knowledge!</p>
 
       {showLeaderboard && (
-        <Leaderboard entries={leaderboardEntries} />
+        <Leaderboard/>
       )}
 
       <Card>
         <CardContent className="pt-6">
           <div className="flex justify-between items-center">
             <div className="space-y-1">
-              <h4 className="text-sm font-medium leading-none">Your Progress</h4>
+              <h4 className="text-sm font-medium leading-none">Hi {currentUsername}!</h4>
               <p className="text-sm text-muted-foreground">
                 Keep going! You're doing great.
               </p>
@@ -402,12 +492,12 @@ export default function Challenges() {
           <TabsTrigger value="advanced">Advanced</TabsTrigger>
         </TabsList>
         <TabsContent value="beginner">
-        <BeginnerChallenges
-          activeChallengeId={activeChallengeId}
-          setActiveChallengeId={setActiveChallengeId}
-          onSubmit={handleSubmit}
-          updateUserProgress={updateUserProgress}
-          userId={currentUserId}
+          <BeginnerChallenges
+            activeChallengeId={activeChallengeId}
+            setActiveChallengeId={setActiveChallengeId}
+            onSubmit={handleSubmit}
+            updateUserProgress={updateUserProgress}
+            username={currentUsername}
           />
         </TabsContent>
         <TabsContent value="intermediate">
@@ -416,7 +506,7 @@ export default function Challenges() {
             setActiveChallengeId={setActiveChallengeId}
             onSubmit={handleSubmit}
             updateUserProgress={updateUserProgress}
-            userId={currentUserId}
+            username={currentUsername}
           />
         </TabsContent>
         <TabsContent value="advanced">
@@ -425,7 +515,7 @@ export default function Challenges() {
             setActiveChallengeId={setActiveChallengeId}
             onSubmit={handleSubmit}
             updateUserProgress={updateUserProgress}
-            userId={currentUserId}
+            username={currentUsername}
           />
         </TabsContent>
       </Tabs>
@@ -447,7 +537,7 @@ export default function Challenges() {
               <div className="text-sm text-muted-foreground">Total Points</div>
               <div className="text-2xl font-semibold flex items-center mt-1">
                 <Trophy className="h-5 w-5 text-blue-500 mr-2" />
-                {userPoints}
+                {localStorage.userPoints}
               </div>
             </div>
           </div>

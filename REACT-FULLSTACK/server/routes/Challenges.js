@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const Challenge = require("../models/Challenge");
+const Challenges = require("../models/Challenge");
+const UserChallengeProgresses = require("../models/UserChallengeProgress");
+const Users = require("../models/User");
 
 const validCategories = ["Beginner", "Intermediate", "Advanced"];
 const validCipherTypes = ["Caesar", "Vigenère", "Substitution", "Transposition"];
@@ -32,7 +34,7 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    const newChallenge = new Challenge({
+    const newChallenge = new Challenges({
       title,
       description,
       ciphertext,
@@ -47,7 +49,7 @@ router.post("/", async (req, res) => {
     await newChallenge.save();
 
     res.status(201).json({
-      message: "Challenge created successfully",
+      message: "Challenges created successfully",
       challenge: newChallenge,
     });
   } catch (error) {
@@ -72,7 +74,7 @@ router.get("/", async (req, res) => {
     const query = {};
     if (category) query.category = category;
 
-    const challenges = await Challenge.find(query)
+    const challenges = await Challenges.find(query)
       .skip(parseInt(offset))
       .limit(parseInt(limit))
       .sort({ [sortBy]: order === "ASC" ? 1 : -1 });
@@ -90,13 +92,13 @@ router.get("/", async (req, res) => {
 
 router.get("/random", async (req, res) => {
   try {
-    const count = await Challenge.countDocuments();
+    const count = await Challenges.countDocuments();
     if (count === 0) {
       return res.status(404).json({ error: "No challenges found." });
     }
 
     const randomIndex = Math.floor(Math.random() * count);
-    const randomChallenge = await Challenge.findOne().skip(randomIndex);
+    const randomChallenge = await Challenges.findOne().skip(randomIndex);
 
     res.json(randomChallenge);
   } catch (error) {
@@ -105,5 +107,118 @@ router.get("/random", async (req, res) => {
   }
 });
 
+router.get('/beginner/progress', async (req, res) => {
+  try {
+    // Fetch all beginner challenges
+    const challenges = await UserChallengeProgresses.find();
+        
+    // If no progress data is found, create default progress entries
+    if (!challenges.length) {
+      const users = await Users.find(); // Use Users instead of User
+      
+      const result = users.flatMap(user => 
+        challenges.map(challenge => ({
+          userId: user.userId,
+          username: user.username,
+          challengeId: challenge._id, // Use _id instead of challengeId
+          challengeTitle: challenge.title,
+          solved: false,
+          points: challenge.points,
+          category: challenge.category
+        }))
+      );
+      
+      return res.status(200).json(result);
+    }
+    
+    // Filter data for Beginner category
+    const filteredData = challenges.filter(entry => entry.category === 'Beginner');
+    
+    console.log(filteredData);
+    
+    // Respond with the constructed array
+    res.status(200).json(filteredData);
+  } catch (error) {
+    console.error("Error fetching beginner challenges:", error);
+    console.error("Full error details:", error.stack);
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
+});
+
+router.get('/intermediate/progress', async (req, res) => {
+  try {
+    // Fetch all beginner challenges
+    const challenges = await UserChallengeProgresses.find();
+        
+    // If no progress data is found, create default progress entries
+    if (!challenges.length) {
+      const users = await Users.find(); // Use Users instead of User
+      
+      const result = users.flatMap(user => 
+        challenges.map(challenge => ({
+          userId: user.userId,
+          username: user.username,
+          challengeId: challenge._id, // Use _id instead of challengeId
+          challengeTitle: challenge.title,
+          solved: false,
+          points: challenge.points,
+          category: challenge.category
+        }))
+      );
+      
+      return res.status(200).json(result);
+    }
+    
+    // Filter data for Beginner category
+    const filteredData = challenges.filter(entry => entry.category === 'Intermediate');
+    
+    console.log(filteredData);
+    
+    // Respond with the constructed array
+    res.status(200).json(filteredData);
+  } catch (error) {
+    console.error("Error fetching beginner challenges:", error);
+    console.error("Full error details:", error.stack);
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
+});
+
+router.get('/advanced/progress', async (req, res) => {
+  try {
+    // Fetch all beginner challenges
+    const challenges = await UserChallengeProgresses.find();
+        
+    // If no progress data is found, create default progress entries
+    if (!challenges.length) {
+      const users = await Users.find(); // Use Users instead of User
+      
+      const result = users.flatMap(user => 
+        challenges.map(challenge => ({
+          userId: user.userId,
+          username: user.username,
+          challengeId: challenge._id, // Use _id instead of challengeId
+          challengeTitle: challenge.title,
+          solved: false,
+          points: challenge.points,
+          category: challenge.category
+        }))
+      );
+      
+      return res.status(200).json(result);
+    }
+    
+    // Filter data for Beginner category
+    const filteredData = challenges.filter(entry => entry.category === 'Advanced');
+    
+    console.log(filteredData);
+    
+    // Respond with the constructed array
+    res.status(200).json(filteredData);
+  } catch (error) {
+    console.error("Error fetching beginner challenges:", error);
+    console.error("Full error details:", error.stack);
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
+});
 
 module.exports = router;

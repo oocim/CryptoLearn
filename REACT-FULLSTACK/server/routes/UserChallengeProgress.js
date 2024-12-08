@@ -7,20 +7,21 @@ const UserChallengeProgress = require("../models/UserChallengeProgress");
 
 // Submit an answer and update progress
 router.post("/submit-answer", async (req, res) => {
-    const { userId, challengeId, answer } = req.body;
+    const { username, challengeId, answer } = req.body;
 
     try {
-        const user = await User.findById(userId);
+        const user = await User.findOne({username});
         const challenge = await Challenge.findById(challengeId);
 
         if (!user || !challenge) {
             return res.status(404).json({ error: "User or Challenge not found." });
         }
 
-        let progress = await UserChallengeProgress.findOne({ userId, challengeId });
+        let progress = await UserChallengeProgress.findOne({ username, challengeId });
 
         if (!progress) {
             progress = new UserChallengeProgress({
+                username,
                 userId,
                 challengeId,
                 attempts: 0,
@@ -28,14 +29,9 @@ router.post("/submit-answer", async (req, res) => {
             });
         }
 
-        // Check if the answer is correct
-        let isCorrect = answer === challenge.plaintext;
-
-        if (isCorrect) {
-            progress.solved = true; // Mark as solved
-        } else {
-            progress.attempts += 1; // Increment attempts if incorrect
-        }
+        isCorrect = true;
+        console.log(isCorrect)
+        progress.solved = true;
 
         progress.lastAttemptedAt = new Date();
         await progress.save();
@@ -44,6 +40,32 @@ router.post("/submit-answer", async (req, res) => {
     } catch (error) {
         console.error("Error submitting answer:", error);
         res.status(500).json({ error: "An error occurred while submitting the answer." });
+    }
+});
+
+router.post('/', async (req, res) => {
+    try {
+        const { userId, challengeId, solved } = req.body;
+        
+        // Use Mongoose's updateOne method
+        const updated = await UserChallengeProgress.updateOne(
+            { userId, challengeId }, // filter
+            { solved }, // update
+            { upsert: true } // optional: create if not exists
+        );
+
+        // Check if any document was modified
+        if (updated.modifiedCount === 0 && updated.upsertedCount === 0) {
+            return res.status(404).json({ error: 'No matching progress record found to update' });
+        }
+
+        // Fetch the updated or created document to send back
+        const progress = await UserChallengeProgress.findOne({ userId, challengeId });
+        
+        res.json(progress);
+    } catch (error) {
+        console.error('Error updating progress:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 

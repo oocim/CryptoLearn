@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Challenge, ChallengeCard, UserChallengeProgress } from '../Challenges';
+import { Challenge, ChallengeCard } from '../Challenges';
 
 export const fetchBeginnerChallenges = async (): Promise<Challenge[]> => {
   try {
@@ -18,25 +18,34 @@ export const fetchBeginnerChallenges = async (): Promise<Challenge[]> => {
 
 export const fetchUserProgress = async (): Promise<UserChallengeProgress[]> => {
   try {
-    const response = await fetch("http://localhost:3000/challenges/progress");
+    const response = await fetch("http://localhost:3000/challenges/beginner/progress");
     if (!response.ok) {
       throw new Error('Failed to fetch user progress');
     }
-    const data: UserChallengeProgress[] = await response.json();
-    console.log("User Progress:", data);
-    return data;
+    const data: UserChallengeProgress[] = await response.json()
+    const username = localStorage.getItem('username') || '';
+    const filteredData = data.filter(entry => entry.username === username)
+    console.log("Filtered Data:", filteredData)
+    return filteredData;
   } catch (error) {
     console.error('Error fetching user progress:', error);
     return [];
   }
 };
 
+export interface UserChallengeProgress {
+  progressId: number
+  username: string
+  challengeId: string
+  solved: boolean
+}
+
 interface BeginnerChallengesProps {
-  activeChallengeId: number | null;
-  setActiveChallengeId: (id: number | null) => void;
-  onSubmit: (answer: string, challengeId: number) => void;
-  updateUserProgress: (progressId: number, challengeId: number, solved: boolean) => void;
-  userId: number;
+  activeChallengeId: string | null;
+  setActiveChallengeId: (id: string | null) => void;
+  onSubmit: (answer: string, challengeId: string) => void;
+  updateUserProgress: (username: string, challengeId: string, solved: boolean) => void;
+  username: string;
 }
 
 export default function BeginnerChallenges({
@@ -44,7 +53,7 @@ export default function BeginnerChallenges({
   setActiveChallengeId,
   onSubmit,
   updateUserProgress,
-  userId,
+  username,
 }: BeginnerChallengesProps) {
   const [beginnerChallenges, setBeginnerChallenges] = useState<Challenge[]>([]);
   const [userProgress, setUserProgress] = useState<UserChallengeProgress[]>([]);
@@ -59,26 +68,26 @@ export default function BeginnerChallenges({
       setUserProgress(progress);
     };
     loadChallengesAndProgress();
-  }, [userId]);
+  }, [username]);
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
       {beginnerChallenges.map((challenge) => {
         const progress =
-          userProgress.find((p) => p.challengeId === challenge.challengeId) || {
+          userProgress.find((p) => p.challengeId === challenge._id) || {
             progressId: 0,
-            userId: userId,
-            challengeId: challenge.challengeId,
+            username: username,
+            challengeId: challenge._id,
             solved: false,
           };
         return (
           <ChallengeCard
-            key={challenge.challengeId}
+            key={challenge._id}
             challenge={challenge}
             userChallengeProgress={progress}
-            isActive={activeChallengeId === challenge.challengeId}
-            onActivate={() => setActiveChallengeId(challenge.challengeId)}
-            onSubmit={(answer: string) => onSubmit(answer, challenge.challengeId)}
+            isActive={activeChallengeId === challenge._id}
+            onActivate={() => setActiveChallengeId(challenge._id)}
+            onSubmit={(answer: string) => onSubmit(answer, challenge._id)}
             updateUserProgress={updateUserProgress}
           />
         );

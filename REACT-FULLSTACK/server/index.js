@@ -5,6 +5,10 @@ const mongoose = require("mongoose");
 
 dotenv.config();
 
+console.log('MongoDB URI:', process.env.MONGO_URI);
+console.log('PORT:', process.env.PORT);
+console.log('JWT Secret is set:', !!process.env.JWT_SECRET);
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -18,7 +22,6 @@ const userRouter = require("./routes/Users");
 app.use("/challenges", challengesRouter);
 app.use("/user-progress", userChallengeProgressRouter);
 app.use("/users", userRouter);
-
 
 const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/crypto";
 

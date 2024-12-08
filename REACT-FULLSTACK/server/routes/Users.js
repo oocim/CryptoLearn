@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const initializeUserProgress = require('../utils/initializeUserProgress');
 
 const router = express.Router();
 
@@ -15,6 +16,89 @@ router.get("/", async (req, res) => {
         res.status(500).json({ error: "An error occurred while fetching users" });
     }
 });
+
+// Leaderboards route
+router.get('/leaderboards', async (req, res) => {
+    try {
+        const leaderboards = await User.aggregate([
+            // Lookup userChallengeProgresses
+            {
+                $lookup: {
+                    from: 'userchallengeprogresses',
+                    localField: '_id',
+                    foreignField: 'userId',
+                    as: 'progresses'
+                }
+            },
+            // Unwind progresses
+            { $unwind: '$progresses' },
+            // Lookup challenges
+            {
+                $lookup: {
+                    from: 'challenges',
+                    localField: 'progresses.challengeId',
+                    foreignField: '_id',
+                    as: 'challenge'
+                }
+            },
+            // Unwind challenge
+            { $unwind: '$challenge' },
+            // Match only solved challenges
+            { $match: { 'progresses.solved': true } },
+            // Group by user to calculate the score and count solved challenges
+            {
+                $group: {
+                    _id: '$_id',
+                    username: { $first: '$username' },
+                    points: { $sum: '$challenge.points' },
+                    solvedChallenges: { $sum: 1 }
+                }
+            },
+            // Sort by points in descending order
+            { $sort: { points: -1 } },
+            // Limit to top 5 users
+            { $limit: 5 },
+            // Add rank
+            {
+                $group: {
+                    _id: null,
+                    users: { 
+                        $push: { 
+                            userId: '$_id', 
+                            username: '$username', 
+                            points: '$points',
+                            solvedChallenges: '$solvedChallenges'
+                        } 
+                    }
+                }
+            },
+            {
+                $unwind: {
+                    path: '$users',
+                    includeArrayIndex: 'rank'
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    rank: { $add: ['$rank', 1] },
+                    userId: '$users.userId',
+                    username: '$users.username',
+                    points: '$users.points',
+                    solvedChallenges: '$users.solvedChallenges'
+                }
+            },
+            { $sort: { rank: 1 } }
+        ]);
+
+        console.log("Leaderboards:", JSON.stringify(leaderboards, null, 2));
+        res.json(leaderboards);
+    } catch (error) {
+        console.error('Error fetching leaderboards:', error);
+        res.status(500).json({ error: 'An error occurred while fetching leaderboards' });
+    }
+});
+
 
 // Get a specific user by ID
 router.get("/:userId", async (req, res) => {
@@ -56,7 +140,7 @@ router.post("/", async (req, res) => {
         });
 
         await newUser.save();
-
+        await initializeUserProgress(newUser._id, newUser.username);
         res.status(201).json({ message: "User created successfully", userId: newUser._id });
     } catch (error) {
         console.error("Error creating user:", error);
@@ -209,5 +293,28 @@ router.get("/user-info/:username", async (req, res) => {
 });
 
 
+router.post('/', async (req, res) => {
+    try {
+        const { userId, username, email, password } = req.body;
+        // Create user (you can hash the password before saving in practice)
+        const user = await User.create({
+            userId: userId,
+            username: username,
+            email: email,
+            passwordHash: password // Use a hashed password here
+        });
+        // Now, create the default progress for all challenges
+        await createDefaultProgressForUser(user.userId);
+        // Respond with success
+        res.status(201).json({
+            message: "User registered successfully",
+            userId: user.userId,
+            username: user.username
+        });
+    } catch (error) {
+        console.error("Error registering user:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 module.exports = router;
