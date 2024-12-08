@@ -403,14 +403,15 @@ const PlayfairCipherTab = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              <Button
-                onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
-                disabled={currentStep === 0}
-                variant="outline"
-                size="icon"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+            <Button
+              onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+              disabled={currentStep === 0}
+              variant="outline"
+              size="icon"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex space-x-2">
               <Button
                 onClick={() => setIsPlaying(!isPlaying)}
                 variant="outline"
@@ -428,14 +429,22 @@ const PlayfairCipherTab = () => {
                 )}
               </Button>
               <Button
-                onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
-                disabled={currentStep === steps.length - 1}
+                onClick={() => setCurrentStep(0)}
                 variant="outline"
-                size="icon"
               >
-                <ChevronRight className="h-4 w-4" />
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Reset
               </Button>
             </div>
+            <Button
+              onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
+              disabled={currentStep === steps.length - 1}
+              variant="outline"
+              size="icon"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
           </CardContent>
         </Card>
       )}
